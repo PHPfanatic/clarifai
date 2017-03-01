@@ -2,7 +2,7 @@
 
 /**
  * Base API functionality for clarifAI.  This abstract class is a bit heavy, but handles all of the communication
- * between the extended client class.
+ * between the extended client class and clarifAI.
  *
  * @author   Nick White <git@phpfanatic.com>
  * @link     https://github.com/PHPfanatic/clarifAI
@@ -17,13 +17,7 @@ abstract class AbstractBaseApi implements AuthInterface
 	private $version = 'v2';
 	private $apiurl = null;
 	private $access = ['token'=>null, 'token_time'=>null, 'token_expires'=>null];
-	private $model = [
-			'General'=>'general-v1.3', 
-			'Adult'=>'nsfw-v1.0', 
-			'Weddings'=>'weddings-v1.0', 
-			'Travel'=>'travel-v1.0', 
-			'Food'=>'food-items-v1.0'];
-
+	
 	public function __construct($clientid, $clientsecret) {
 		$this->SetClientId($clientid);
 		$this->SetClientSecret($clientsecret);
@@ -39,16 +33,49 @@ abstract class AbstractBaseApi implements AuthInterface
 		$this->clientsecret = $clientsecret;
 	}
 	
+	/**
+	 * Sets a new endpoint url.  Calling this method also updates the Api url.
+	 * @example $client->SetEndPoint('http://api.clarifai.com');
+	 * @param string $endpoint
+	 */
 	public function SetEndPoint($endpoint) {
 		$this->endpoint = $endpoint;
+		$this->SetApiUrl();
 	}
 	
+	/**
+	 * Sets a new clarifAI version to work with.  Calling this method also updates the Api url.
+	 * @example $client->SetVersion('v2');
+	 * @param string $version
+	 */
 	public function SetVersion($version) {
 		$this->version = $version;
+		$this->SetApiUrl();
 	}
 	
-	public function SetApiUrl() {
+	/**
+	 *	Sets the api url.
+	 */
+	private function SetApiUrl() {
 		$this->apiurl = $this->endpoint . '/' . $this->version;
+	}
+		
+	/**
+	 * Validate if a OAUTH token is set and if it is valid.
+	 * {@inheritDoc}
+	 * @see \PhpFanatic\clarifAI\Api\AuthInterface::IsTokenValid()
+	 * @return bool
+	 */
+	public function IsTokenValid() {
+		if(!isset($this->access['token'])) {
+			return false;
+		}
+	
+		if(((int) date('U') - $this->access['token_time']) < $this->access['token_expires']) {
+			return false;
+		}
+	
+		return true;
 	}
 	
 	/**
@@ -84,19 +111,7 @@ abstract class AbstractBaseApi implements AuthInterface
 			throw new \ErrorException('Token generation failed.');
 		}
 	}
-	
-	public function IsTokenValid() {
-		if(!isset($this->access['token'])) {
-			return false;
-		}
-	
-		if(((int) date('U') - $this->access['token_time']) < $this->access['token_expires']) {
-			return false;
-		}
 		
-		return true;
-	}
-	
 	public function SendPost($data, $service='inputs') {		
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
@@ -115,12 +130,12 @@ abstract class AbstractBaseApi implements AuthInterface
 	}
 	
 	public function SendGet($data, $service='inputs') {
-		$auth = 'Authorization: Bearer '.$this->access['token'];
-	
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_HEADER, array('Content-Type: application/json', $auth));
 		curl_setopt($ch, CURLOPT_URL, $this->apiurl . '/' . $service);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HEADER, array(
+				'Content-Type: application/json',
+				'Authorization: Bearer '.$this->access['token']));
 	
 		$result = curl_exec($ch);
 		curl_close($ch);
