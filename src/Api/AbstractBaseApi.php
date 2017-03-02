@@ -16,19 +16,34 @@ abstract class AbstractBaseApi implements AuthInterface
 	private $endpoint = 'https://api.clarifai.com';
 	private $version = 'v2';
 	private $apiurl = null;
-	private $access = ['token'=>null, 'token_time'=>null, 'token_expires'=>null];
 	
+	public $access = ['token'=>null, 'token_time'=>null, 'token_expires'=>null];
+	
+	/**
+	 * Initial ImageClient setup.
+	 * @param string $clientid
+	 * @param string $clientsecret
+	 */
 	public function __construct($clientid, $clientsecret) {
 		$this->SetClientId($clientid);
 		$this->SetClientSecret($clientsecret);
 		$this->SetApiUrl();
-		$this->GenerateToken();
 	}
 	
+	/**
+	 * Set client id
+	 * {@inheritDoc}
+	 * @see \PhpFanatic\clarifAI\Api\AuthInterface::SetClientId()
+	 */
 	public function SetClientId($clientid) {
 		$this->clientid = $clientid;
 	}
 
+	/**
+	 * Set client secret
+	 * {@inheritDoc}
+	 * @see \PhpFanatic\clarifAI\Api\AuthInterface::SetClientSecret()
+	 */
 	public function SetClientSecret($clientsecret) {
 		$this->clientsecret = $clientsecret;
 	}
@@ -82,8 +97,7 @@ abstract class AbstractBaseApi implements AuthInterface
 	 * Generate OAUTH token and set the access variable as needed.
 	 * {@inheritDoc}
 	 * @see \PhpFanatic\clarifAI\Api\AuthInterface::GenerateToken()
-	 * @throws \ErrorException
-	 * @return null
+	 * @return array
 	 */
 	public function GenerateToken() {
 		$ch = curl_init();
@@ -102,17 +116,18 @@ abstract class AbstractBaseApi implements AuthInterface
 		
 		curl_close($ch);
 
-		if($result['status']['code'] == '10000'){
-			$this->access['token'] = $result['access_token'];
-			$this->access['token_time'] = (int)date('U');
-			$this->access['token_expires'] = $result['expires_in'];
-		}
-		else {
-			throw new \ErrorException('Token generation failed.');
-		}
+		return $result;
 	}
-		
-	public function SendPost($data, $service='inputs') {		
+
+	/**
+	 * Send a POST request to clarifAI API.
+	 * @param string $data json inputs string.
+	 * @param string $service appended to the apiurl when making the API call.
+	 * @return string
+	 */
+	public function SendPost($data, $service='inputs') { 
+		print_r($data);
+		exit;
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
@@ -129,6 +144,12 @@ abstract class AbstractBaseApi implements AuthInterface
 		return $result;
 	}
 	
+	/**
+	 * Send a GET request to clarifAI API.
+	 * @param unknown $data
+	 * @param string $service
+	 * @return mixed
+	 */
 	public function SendGet($data, $service='inputs') {
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $this->apiurl . '/' . $service);

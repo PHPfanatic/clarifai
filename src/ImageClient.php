@@ -2,8 +2,11 @@
 
 use PhpFanatic\clarifAI\Api\AbstractBaseApi;
 
-class Client extends AbstractBaseApi 
+class ImageClient extends AbstractBaseApi 
 {	
+	public $data = array();
+	public $image = array('inputs'=>array());
+	
 	private $model = [
 			'General'=>'general-v1.3',
 			'Adult'=>'nsfw-v1.0',
@@ -11,20 +14,31 @@ class Client extends AbstractBaseApi
 			'Travel'=>'travel-v1.0',
 			'Food'=>'food-items-v1.0'];
 	
-	public $data; 
-	
 	public function __construct($clientid, $clientsecret) {
 		parent::__construct($clientid, $clientsecret);
 	}
 	
 	public function InputAdd() {
-		if(!$this->IsTokenValid()) {
-			$this->GenerateToken();
+		if(!isset($this->data) || !is_array($this->data)) {
+			throw new \ErrorException('You must add at least one image via AddImage().');	
 		}
 		
-		$json = json_encode($this->data);
+		if(!$this->IsTokenValid()) {
+			$result = $this->GenerateToken();
+			
+			if($result['status']['code'] == '10000'){
+				$this->access['token'] = $result['access_token'];
+				$this->access['token_time'] = (int)date('U');
+				$this->access['token_expires'] = $result['expires_in'];
+			}
+			else {
+				throw new \ErrorException('Token generation failed.');
+			}
+		}
 		
-		return ($this->SendPost($data));
+		$json = json_encode($this->image);
+		
+		return $this->SendPost($json);
 	}
 	
 	public function InputGet() {
@@ -37,6 +51,7 @@ class Client extends AbstractBaseApi
 	
 	public function ClearImage() {
 		unset($this->data);
+		$this->image = array('inputs'=>array());
 	}
 	
 	public function AddImage($image, $id, $concept=array(), $metadata=array(), $crop=array()) {
@@ -62,5 +77,7 @@ class Client extends AbstractBaseApi
 		if(count($crop)) {
 			array_push($this->data['data']['image'], array('crop'=>$crop));
 		}
+		
+		$this->image['inputs'][] = $this->data;
 	}
 }
