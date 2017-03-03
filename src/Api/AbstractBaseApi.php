@@ -101,21 +101,19 @@ abstract class AbstractBaseApi implements AuthInterface
 	 */
 	public function GenerateToken() {
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_HEADER, array('Content-Type: application/json'));
+		
+		$header = array();
+		$header[] = 'Content-type: application/json';
+		
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_setopt($ch, CURLOPT_USERPWD, $this->clientid . ":" . $this->clientsecret);
 		curl_setopt($ch, CURLOPT_URL, $this->apiurl . '/token');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		
-		$result = curl_exec($ch);
-		
-		//The header is returned along with the response, we parse it out here.
-		$header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-		$header = substr($result, 0, $header_size);
-		$result = json_decode(substr($result, $header_size), true);
-		
+		$result = curl_exec($ch);	
 		curl_close($ch);
-
+		
 		return $result;
 	}
 
@@ -126,17 +124,17 @@ abstract class AbstractBaseApi implements AuthInterface
 	 * @return string
 	 */
 	public function SendPost($data, $service='inputs') { 
-		print_r($data);
-		exit;
 		$ch = curl_init();
+		
+		$header = array();
+		$header[] = 'Content-type: application/json';
+		$header[] = 'Authorization: Bearer ' . $this->access['token'];
+		
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-		curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 		curl_setopt($ch, CURLOPT_URL, $this->apiurl . '/' . $service);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HEADER, array(
-				'Content-Type: application/json', 
-				'Content-Length: ' . strlen($data),
-				'Authorization: Bearer '.$this->access['token']));
 		
 		$result = curl_exec($ch);
 		curl_close($ch);
@@ -152,12 +150,15 @@ abstract class AbstractBaseApi implements AuthInterface
 	 */
 	public function SendGet($data, $service='inputs') {
 		$ch = curl_init();
+		
+		$header = array();
+		$header[] = 'Content-type: application/json';
+		$header[] = 'Authorization: Bearer ' . $this->access['token'];
+		
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_URL, $this->apiurl . '/' . $service);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HEADER, array(
-				'Content-Type: application/json',
-				'Authorization: Bearer '.$this->access['token']));
-	
+		
 		$result = curl_exec($ch);
 		curl_close($ch);
 	
