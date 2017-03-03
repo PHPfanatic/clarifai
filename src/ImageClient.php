@@ -1,6 +1,7 @@
 <?php namespace PhpFanatic\clarifAI;
 
 use PhpFanatic\clarifAI\Api\AbstractBaseApi;
+use PhpFanatic\clarifAI\Response\Response;
 
 class ImageClient extends AbstractBaseApi 
 {	
@@ -31,9 +32,8 @@ class ImageClient extends AbstractBaseApi
 		}
 		
 		if(!$this->IsTokenValid()) {
+			$result = Response::GetArray($this->GenerateToken());
 			
-			$result = $this->GenerateToken();
-				
 			if($result['status']['code'] == '10000') {
 				$this->access['token'] = $result['access_token'];
 				$this->access['token_time'] = (int)date('U');
@@ -47,9 +47,9 @@ class ImageClient extends AbstractBaseApi
 		$service = 'models/' . $this->models[$model] . '/outputs';
 		$json = json_encode($this->image);
 		
-		return $this->SendPost($json, $service);
+		$result = $this->SendPost($json, $service);
 		
-		
+		return (Response::GetJson($result));
 	}
 	
 	public function AddInput() {
