@@ -1,4 +1,11 @@
 <?php namespace PhpFanatic\clarifAI\Response;
+/**
+ * Basic response handler, this will extend as development moves forward.
+ *
+ * @author   Nick White <git@phpfanatic.com>
+ * @link     https://github.com/PHPfanatic/clarifai
+ * @version  0.1.1
+ */
 
 class Response
 {
@@ -28,6 +35,6 @@ class Response
 	public static function GetStatusCode($result) {
 		$result = json_decode($result, true);
 		
-		return (int)$result['status']['code'];
+		return $result['status']['code'];
 	}
 }

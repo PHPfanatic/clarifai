@@ -1,4 +1,11 @@
 <?php namespace PhpFanatic\clarifAI;
+/**
+ * Image client for the clarifAI API.
+ *
+ * @author   Nick White <git@phpfanatic.com>
+ * @link     https://github.com/PHPfanatic/clarifai
+ * @version  0.1.1
+ */
 
 use PhpFanatic\clarifAI\Api\AbstractBaseApi;
 use PhpFanatic\clarifAI\Response\Response;
@@ -6,7 +13,7 @@ use PhpFanatic\clarifAI\Response\Response;
 class ImageClient extends AbstractBaseApi 
 {	
 	public $data = array();
-	public $image = array('inputs'=>array());
+	public $image;
 	
 	private $models = [
 			'General'=>'aaa03c23b3724a16a56b629203edc62c',
@@ -26,9 +33,13 @@ class ImageClient extends AbstractBaseApi
 	 * @throws \ErrorException
 	 * @return string
 	 */
-	public function Predict($model) {
+	public function Predict($model='General') {
 		if(!isset($this->image) || !is_array($this->image)) {
-			throw new \ErrorException('You must add at least one image via AddImage().');
+			throw new \LogicException('You must add at least one image via AddImage().');
+		}
+		
+		if(!array_key_exists($model, $this->models)) {
+			throw new \InvalidArgumentException('The model requested is not valid.');
 		}
 		
 		if(!$this->IsTokenValid()) {
@@ -54,7 +65,7 @@ class ImageClient extends AbstractBaseApi
 	
 	public function AddInput() {
 		if(!isset($this->image) || !is_array($this->image)) {
-			throw new \ErrorException('You must add at least one image via AddImage().');	
+			throw new \LogicException('You must add at least one image via AddImage().');
 		}
 		
 		if(!$this->IsTokenValid()) {
@@ -123,12 +134,17 @@ class ImageClient extends AbstractBaseApi
 		}
 		
 		$this->image['inputs'][] = $data;
+		
+		return null;
 	}
 	
 	/**
-	 * Used to clear $this->image variable after adding an image via AddImage.  
+	 * Used to clear/reset $this->image variable after adding an image via AddImage.
+	 *
+	 * @return null  
 	 */
 	public function ClearImage() {
-		$this->image = array('inputs'=>array());
+		unset($this->image);
+		return null;
 	}
 }

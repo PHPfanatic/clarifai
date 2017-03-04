@@ -5,7 +5,7 @@
  * between the extended client class and clarifAI.
  *
  * @author   Nick White <git@phpfanatic.com>
- * @link     https://github.com/PHPfanatic/clarifAI
+ * @link     https://github.com/PHPfanatic/clarifai
  * @version  0.1.1
  */
 
