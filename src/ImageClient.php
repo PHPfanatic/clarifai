@@ -63,14 +63,14 @@ class ImageClient extends AbstractBaseApi
 		return (Response::GetJson($result));
 	}
 	
-	public function AddInput() {
+	public function Inputs() {
 		if(!isset($this->image) || !is_array($this->image)) {
 			throw new \LogicException('You must add at least one image via AddImage().');
 		}
 		
 		if(!$this->IsTokenValid()) {
-			$result = $this->GenerateToken();
-			
+			$result = Response::GetArray($this->GenerateToken());
+				
 			if($result['status']['code'] == '10000') {
 				$this->access['token'] = $result['access_token'];
 				$this->access['token_time'] = (int)date('U');
@@ -81,16 +81,19 @@ class ImageClient extends AbstractBaseApi
 			}
 		}
 		
+		$service = 'inputs';
 		$json = json_encode($this->image);
 		
-		return $this->SendPost($json);
+		$result = $this->SendPost($json, $service);
+		
+		return (Response::GetJson($result));
 	}
 	
-	public function GetInput() {
+	public function Search() {
 		
 	}
 	
-	public function DeleteInput() {
+	public function Delete() {
 		
 	}
 	
@@ -122,15 +125,15 @@ class ImageClient extends AbstractBaseApi
 		}
 	
 		if(count($concept)) {
-			array_push($data['data'], array('concepts'=>$concept));
+			$data['data']['concepts'] = array($concept);
 		}
 	
 		if(count($metadata)) {
-			array_push($data['data'], array('metadata'=>$metadata));
+			$data['data']['metadata'] = $metadata;
 		}
 	
 		if(count($crop)) {
-			array_push($data['data']['image'], array('crop'=>$crop));
+			$data['data']['image']['crop'] = $crop;
 		}
 		
 		$this->image['inputs'][] = $data;

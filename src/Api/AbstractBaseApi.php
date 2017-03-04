@@ -123,7 +123,7 @@ abstract class AbstractBaseApi implements AuthInterface
 	 * @param string $service appended to the apiurl when making the API call.
 	 * @return string
 	 */
-	public function SendPost($data, $service='inputs') { 
+	public function SendPost($data, $service) { 
 		$ch = curl_init();
 		
 		$header = array();
