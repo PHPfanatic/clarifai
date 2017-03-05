@@ -1,5 +1,5 @@
 # clarifAI PHP Library
-
+[![Build Status](https://travis-ci.org/PHPfanatic/clarifai.svg?branch=master)](https://travis-ci.org/PHPfanatic/clarifai)
 Description
 
 ## Getting Started

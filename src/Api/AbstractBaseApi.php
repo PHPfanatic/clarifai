@@ -97,7 +97,7 @@ abstract class AbstractBaseApi implements AuthInterface
 	 * Generate OAUTH token and set the access variable as needed.
 	 * {@inheritDoc}
 	 * @see \PhpFanatic\clarifAI\Api\AuthInterface::GenerateToken()
-	 * @return array
+	 * @return bool
 	 */
 	public function GenerateToken() {
 		$ch = curl_init();
@@ -111,10 +111,19 @@ abstract class AbstractBaseApi implements AuthInterface
 		curl_setopt($ch, CURLOPT_URL, $this->apiurl . '/token');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		
-		$result = curl_exec($ch);	
+		$result = json_decode(curl_exec($ch), true);	
 		curl_close($ch);
 		
-		return $result;
+		if($result['status']['code'] == '10000') {
+			$this->access['token'] = $result['access_token'];
+			$this->access['token_time'] = (int)date('U');
+			$this->access['token_expires'] = $result['expires_in'];
+		}
+		else {
+			return false;
+		}
+		
+		return true;
 	}
 
 	/**

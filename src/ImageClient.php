@@ -13,7 +13,9 @@ use PhpFanatic\clarifAI\Response\Response;
 class ImageClient extends AbstractBaseApi 
 {	
 	public $data = array();
-	public $image;
+	protected $image;
+	protected $search;
+	
 	
 	private $models = [
 			'General'=>'aaa03c23b3724a16a56b629203edc62c',
@@ -30,8 +32,10 @@ class ImageClient extends AbstractBaseApi
 	/**
 	 * Predict image content based on model passed in.
 	 * @param string $model 
+	 * @throws \LogicException
 	 * @throws \ErrorException
-	 * @return string
+	 * @throws \InvalidArgumentException
+	 * @return string Json response from ClarifAI.
 	 */
 	public function Predict($model='General') {
 		if(!isset($this->image) || !is_array($this->image)) {
@@ -43,14 +47,7 @@ class ImageClient extends AbstractBaseApi
 		}
 		
 		if(!$this->IsTokenValid()) {
-			$result = Response::GetArray($this->GenerateToken());
-			
-			if($result['status']['code'] == '10000') {
-				$this->access['token'] = $result['access_token'];
-				$this->access['token_time'] = (int)date('U');
-				$this->access['token_expires'] = $result['expires_in'];
-			}
-			else {
+			if($this->GenerateToken() === false) {
 				throw new \ErrorException('Token generation failed.');
 			}
 		}
@@ -63,20 +60,19 @@ class ImageClient extends AbstractBaseApi
 		return (Response::GetJson($result));
 	}
 	
+	/**
+	 * Add an image(s) to be indexed.
+	 * @throws \LogicException
+	 * @throws \ErrorException
+	 * @return string Json response from ClarifAI.
+	 */
 	public function Inputs() {
 		if(!isset($this->image) || !is_array($this->image)) {
 			throw new \LogicException('You must add at least one image via AddImage().');
 		}
 		
 		if(!$this->IsTokenValid()) {
-			$result = Response::GetArray($this->GenerateToken());
-				
-			if($result['status']['code'] == '10000') {
-				$this->access['token'] = $result['access_token'];
-				$this->access['token_time'] = (int)date('U');
-				$this->access['token_expires'] = $result['expires_in'];
-			}
-			else {
+			if($this->GenerateToken() === false) {
 				throw new \ErrorException('Token generation failed.');
 			}
 		}
@@ -89,8 +85,63 @@ class ImageClient extends AbstractBaseApi
 		return (Response::GetJson($result));
 	}
 	
-	public function Search() {
+	/**
+	 * Search your indexed images, you may search by concept, user concept, metadata or url.
+	 * Term variable should only be an array when searching metadata.
+	 * ClarifAI... this search array structure hurts my head.
+	 * @todo Add image search, requires manipulation of the output/input array.
+	 * @throws InvalidArgumentException
+	 * @throws ErrorException
+	 * @param mixed $term
+	 * @return string Json response from ClarifAI. 
+	 */
+	public function Search($term, $by='concept', $exists=true) {
+		$search_by = array(
+				'concept'		=> array('data_type'=>'concepts', 'direction'=>'output', 'content'=>array(array('name'=>$term, 'value'=>$exists))),
+				'user_concept'	=> array('data_type'=>'concepts', 'direction'=>'input',  'content'=>array(array('name'=>$term, 'value'=>$exists))),
+				'meta'			=> array('data_type'=>'metadata', 'direction'=>'input',  'content'=>array($term[0]=>$term[1])),
+				'url'			=> array('data_type'=>'image', 	  'direction'=>'input',  'content'=>array('url'=>$term)),
+		);
 		
+		// Light validation
+		if(!array_key_exists($by, $search_by)) {
+			throw new \InvalidArgumentException('Invalid \'search by\' parameter.');
+		}
+		
+		if($by == 'meta' && !is_array($term)) {
+			throw new \InvalidArgumentException('Metadata search requires your search term to be an array of [0]=key, [1]=value.');
+		}
+		
+		if($by != 'meta' && !is_string($term)) {
+			throw new \InvalidArgumentException('Search term should be a string.');
+		}
+		
+		$this->search = array(
+			'query'=>array(
+				'ands'=>array(
+					array(
+						$search_by[$by]['direction']=>array(
+							'data'=>array(
+								$search_by[$by]['data_type']=>$search_by[$by]['content']
+							)
+						)
+					)
+				)
+			)
+		);
+
+		if(!$this->IsTokenValid()) {
+			if($this->GenerateToken() === false) {
+				throw new \ErrorException('Token generation failed.');
+			}
+		}
+		
+		$service = 'searches';
+		$json = json_encode($this->search);
+		
+		$result = $this->SendPost($json, $service);
+		
+		return (Response::GetJson($result));
 	}
 	
 	public function Delete() {
