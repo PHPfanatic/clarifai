@@ -87,9 +87,8 @@ class ImageClient extends AbstractBaseApi
 	
 	/**
 	 * Search your indexed images, you may search by concept, user concept, metadata or url.
-	 * Term variable should only be an array when searching metadata.
+	 * the $term variable should only be an array when searching metadata.
 	 * ClarifAI... this search array structure hurts my head.
-	 * @todo Add image search, requires manipulation of the output/input array.
 	 * @throws InvalidArgumentException
 	 * @throws ErrorException
 	 * @param mixed $term
@@ -101,6 +100,7 @@ class ImageClient extends AbstractBaseApi
 				'user_concept'	=> array('data_type'=>'concepts', 'direction'=>'input',  'content'=>array(array('name'=>$term, 'value'=>$exists))),
 				'meta'			=> array('data_type'=>'metadata', 'direction'=>'input',  'content'=>array($term[0]=>$term[1])),
 				'url'			=> array('data_type'=>'image', 	  'direction'=>'input',  'content'=>array('url'=>$term)),
+				'image'			=> array('data_type'=>'image',	  'direction'=>'output', 'content'=>array('url'=>$term))
 		);
 		
 		// Light validation
@@ -129,7 +129,12 @@ class ImageClient extends AbstractBaseApi
 				)
 			)
 		);
-
+		
+		// Dynamically adjust output/input for image search.
+		if($by === 'image') {
+			$this->search['query']['ands'][0]['output'] = array('input'=>$this->search['query']['ands'][0]['output']);
+		}
+		
 		if(!$this->IsTokenValid()) {
 			if($this->GenerateToken() === false) {
 				throw new \ErrorException('Token generation failed.');
