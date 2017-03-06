@@ -17,12 +17,20 @@ class ImageClientTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	/**
-	 * Test sending invalid model to predict.
+	 * Test adding an image builds the correct structure.
 	 */
-	public function testPredictInvalidModel() {
-		$this->expectException(InvalidArgumentException::class);
+	public function testAddImage() {
 		$this->client->AddImage('https://homepages.cae.wisc.edu/~ece533/images/cat.png');
-		$this->client->Predict('unknown_model');
+		$this->assertArrayHasKey('url', $this->client->image['inputs'][0]['data']['image'], 'Adding an image failed.');
+	}
+	
+	/**
+	 * Test adding multiple images builds array of images.
+	 */
+	public function testAddImageMultiple() {
+		$this->client->AddImage('https://homepages.cae.wisc.edu/~ece533/images/cat1.png');
+		$this->client->AddImage('https://homepages.cae.wisc.edu/~ece533/images/cat2.png');
+		$this->assertCount(2, $this->client->image['inputs'], 'Adding multiple images failed.');
 	}
 	
 	/**
@@ -31,5 +39,13 @@ class ImageClientTest extends PHPUnit_Framework_TestCase {
 	public function testPredictNoImage() {
 		$this->expectException(LogicException::class);
 		$this->client->Predict();
+	}
+	
+	/**
+	 * Test token validation is working as intended.
+	 */
+	public function testIsTokenValid() {
+		$response = $this->client->IsTokenValid();
+		$this->assertFalse($response, 'Token validation failed');
 	}
 }

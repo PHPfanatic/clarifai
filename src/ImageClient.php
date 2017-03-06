@@ -13,8 +13,8 @@ use PhpFanatic\clarifAI\Response\Response;
 class ImageClient extends AbstractBaseApi 
 {	
 	public $data = array();
-	protected $image;
-	protected $search;
+	public $image;
+	public $search;
 	
 	
 	private $models = [
@@ -30,21 +30,14 @@ class ImageClient extends AbstractBaseApi
 	}
 	
 	/**
-	 * Predict image content based on model passed in.
-	 * @param string $model 
-	 * @throws \LogicException
-	 * @throws \ErrorException
-	 * @throws \InvalidArgumentException
+	 * Create a model.
+	 * @param string $model
+	 * @param string $model_id
 	 * @return string Json response from ClarifAI.
 	 */
-	public function Predict($model='General') {
-		if(!isset($this->image) || !is_array($this->image)) {
-			throw new \LogicException('You must add at least one image via AddImage().');
-		}
-		
-		if(!array_key_exists($model, $this->models)) {
-			throw new \InvalidArgumentException('The model requested is not valid.');
-		}
+	public function AddModel($model, $model_id) {
+		$data = array('model'=>array('name'=>$model, 'id'=>$model_id));
+		$json = json_encode($data);
 		
 		if(!$this->IsTokenValid()) {
 			if($this->GenerateToken() === false) {
@@ -52,9 +45,102 @@ class ImageClient extends AbstractBaseApi
 			}
 		}
 		
+		$service='models';
+		$result = $this->SendPost($json, $service);
+		
+		return (Response::GetJson($result));
+	}
+	
+	/**
+	 * Update a model with a concept
+	 * @param string $id Model ID to be updated.
+	 * @param array $concepts Array of concepts to be applied.
+	 * @throws \ErrorException
+	 * @return string Json response from ClarifAI.
+	 */
+	public function UpdateModel($id, $concepts) {		
+		$build = array('id'=>$id, 'output_info'=>array('data'=>array('concepts'=>$concepts)));
+		$data['models'][] = $build;
+		$data['action']='merge';
+		
+		if(!$this->IsTokenValid()) {
+			if($this->GenerateToken() === false) {
+				throw new \ErrorException('Token generation failed.');
+			}
+		}
+		
+		$service = 'models';
+		$json = json_encode($data);
+		
+		$result = $this->SendPatch($json, $service);
+		
+		return (Response::GetJson($result));
+	}
+	
+	/**
+	 * Retrieve a list of models
+	 * @param string $id Model ID
+	 * @throws \ErrorException
+	 * @return string Json response from ClarifAI.
+	 */
+	public function GetModels($id=null) {
+		if(!$this->IsTokenValid()) {
+			if($this->GenerateToken() === false) {
+				throw new \ErrorException('Token generation failed.');
+			}
+		}
+		
+		$service = 'models';
+		$id = array($id);
+		$result = $this->SendGet($id, $service);
+		
+		return (Response::GetJson($result));
+	}
+	
+	/**
+	 * Train a model
+	 * @param string $id Model ID.
+	 * @throws \ErrorException
+	 * @return string Json response from ClarifAI.
+	 */
+	public function TrainModel($id) {
+		if(!$this->IsTokenValid()) {
+			if($this->GenerateToken() === false) {
+				throw new \ErrorException('Token generation failed.');
+			}
+		}
+		
+		$service = 'models/'.$id.'/versions';
+		$result = $this->SendPost(null, $service);
+		
+		return (Response::GetJson($result));
+	}
+		
+	/**
+	 * Predict image content based on model passed in.
+	 * @param string $model 
+	 * @throws \LogicException
+	 * @throws \ErrorException
+	 * @return string Json response from ClarifAI.
+	 */
+	public function Predict($model='General') {
+		if(!isset($this->image) || !is_array($this->image)) {
+			throw new \LogicException('You must add at least one image via AddImage().');
+		}
+				
+		if(!$this->IsTokenValid()) {
+			if($this->GenerateToken() === false) {
+				throw new \ErrorException('Token generation failed.');
+			}
+		}
+		
+		// Custom model handler.
+		if(!array_key_exists($model, $models)) {
+			array_push($this->models, array('Custom'=>$model));
+		}
+		
 		$service = 'models/' . $this->models[$model] . '/outputs';
 		$json = json_encode($this->image);
-		
 		$result = $this->SendPost($json, $service);
 		
 		return (Response::GetJson($result));
@@ -66,7 +152,7 @@ class ImageClient extends AbstractBaseApi
 	 * @throws \ErrorException
 	 * @return string Json response from ClarifAI.
 	 */
-	public function Inputs() {
+	public function AddInputs() {
 		if(!isset($this->image) || !is_array($this->image)) {
 			throw new \LogicException('You must add at least one image via AddImage().');
 		}
@@ -79,8 +165,79 @@ class ImageClient extends AbstractBaseApi
 		
 		$service = 'inputs';
 		$json = json_encode($this->image);
-		
 		$result = $this->SendPost($json, $service);
+		
+		return (Response::GetJson($result));
+	}
+	
+	/**
+	 * Update an input with concepts.
+	 * 
+	 * @param string $id Input id to add concept to.
+	 * @param array $concepts An array of concepts to add.
+	 * @return string Json response from ClarifAI.  
+	 */
+	public function UpdateInputs($id, $concepts) {
+		$build = array('id'=>$id, 'data'=>array('concepts'=>$concepts));
+		$data['inputs'][] = $build;
+		$data['action']='merge';
+		
+		if(!$this->IsTokenValid()) {
+			if($this->GenerateToken() === false) {
+				throw new \ErrorException('Token generation failed.');
+			}
+		}
+		
+		$service = 'inputs';
+		$json = json_encode($data);
+		$result = $this->SendPatch($json, $service);
+		
+		return (Response::GetJson($result));
+	}
+	
+	public function DeleteInputConcepts() {
+		
+	}
+	
+	public function DeleteInputs() {
+		
+	}
+	
+	/**
+	 * Return inputs that you have indexed, you may pass an ID to return a specific input.
+	 * @param string $data
+	 * @throws \ErrorException
+	 * @return string Json response from ClarifAI.
+	 */
+	public function GetInputs($id=null) {
+		if(!$this->IsTokenValid()) {
+			if($this->GenerateToken() === false) {
+				throw new \ErrorException('Token generation failed.');
+			}
+		}
+		
+		$service = 'inputs';
+		$id = array($id);
+		$result = $this->SendGet($id, $service);
+		
+		return (Response::GetJson($result));
+	}
+	
+	/**
+	 * Get the status of your bulk inputs
+	 * @throws \ErrorException
+	 * @return string Json response from ClarifAI.
+	 */
+	public function GetInputStatus() {
+		if(!$this->IsTokenValid()) {
+			if($this->GenerateToken() === false) {
+				throw new \ErrorException('Token generation failed.');
+			}
+		}
+		
+		$service = 'inputs';
+		$data = array('status');
+		$result = $this->SendGet($data, $service);
 		
 		return (Response::GetJson($result));
 	}
@@ -143,16 +300,11 @@ class ImageClient extends AbstractBaseApi
 		
 		$service = 'searches';
 		$json = json_encode($this->search);
-		
 		$result = $this->SendPost($json, $service);
 		
 		return (Response::GetJson($result));
 	}
-	
-	public function Delete() {
 		
-	}
-	
 	/**
 	 * Prepare images for API call.  This stores the image and optional data in $this->image.  Calling AddImage()
 	 * multiple times will build an array of images to be posted.  A maximum of 128 images per post is allowed.

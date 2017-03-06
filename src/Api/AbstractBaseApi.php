@@ -152,20 +152,71 @@ abstract class AbstractBaseApi implements AuthInterface
 	}
 	
 	/**
+	 * Send a Delete request to clarifAI API.
+	 * @param string $data json inputs string.
+	 * @param string $service appended to the apiurl when making the API call.
+	 * @return string
+	 */
+	public function SendDelete($service) {
+		$ch = curl_init();
+	
+		$header = array();
+		$header[] = 'Content-type: application/json';
+		$header[] = 'Authorization: Bearer ' . $this->access['token'];
+	
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+		curl_setopt($ch, CURLOPT_URL, $this->apiurl . '/' . $service);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	
+		$result = curl_exec($ch);
+		curl_close($ch);
+	
+		return $result;
+	}
+	
+	/**
+	 * Send a PATCH request to clarifAI API.
+	 * @param string $data json inputs string.
+	 * @param string $service appended to the apiurl when making the API call.
+	 * @return string
+	 */
+	public function SendPatch($data, $service='inputs') {
+		$ch = curl_init();
+	
+		$header = array();
+		$header[] = 'Content-type: application/json';
+		$header[] = 'Authorization: Bearer ' . $this->access['token'];
+	
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PATCH");
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+		curl_setopt($ch, CURLOPT_URL, $this->apiurl . '/' . $service);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+	
+		$result = curl_exec($ch);
+		curl_close($ch);
+	
+		return $result;
+	}
+	
+	/**
 	 * Send a GET request to clarifAI API.
-	 * @param unknown $data
+	 * @param array $data
 	 * @param string $service
 	 * @return mixed
 	 */
-	public function SendGet($data, $service='inputs') {
+	public function SendGet($data=array(), $service='inputs') {
 		$ch = curl_init();
 		
+		$data = implode('/', $data);
+			
 		$header = array();
 		$header[] = 'Content-type: application/json';
 		$header[] = 'Authorization: Bearer ' . $this->access['token'];
 		
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-		curl_setopt($ch, CURLOPT_URL, $this->apiurl . '/' . $service);
+		curl_setopt($ch, CURLOPT_URL, $this->apiurl . '/' . $service . '/' . $data);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		
 		$result = curl_exec($ch);
