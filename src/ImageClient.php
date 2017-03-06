@@ -35,7 +35,7 @@ class ImageClient extends AbstractBaseApi
 	 * @param string $model_id
 	 * @return string Json response from ClarifAI.
 	 */
-	public function AddModel($model, $model_id) {
+	public function ModelAdd($model, $model_id) {
 		$data = array('model'=>array('name'=>$model, 'id'=>$model_id));
 		$json = json_encode($data);
 		
@@ -58,7 +58,7 @@ class ImageClient extends AbstractBaseApi
 	 * @throws \ErrorException
 	 * @return string Json response from ClarifAI.
 	 */
-	public function UpdateModel($id, $concepts) {		
+	public function ModelUpdate($id, $concepts) {		
 		$build = array('id'=>$id, 'output_info'=>array('data'=>array('concepts'=>$concepts)));
 		$data['models'][] = $build;
 		$data['action']='merge';
@@ -83,7 +83,7 @@ class ImageClient extends AbstractBaseApi
 	 * @throws \ErrorException
 	 * @return string Json response from ClarifAI.
 	 */
-	public function GetModels($id=null) {
+	public function ModelGet($id=null) {
 		if(!$this->IsTokenValid()) {
 			if($this->GenerateToken() === false) {
 				throw new \ErrorException('Token generation failed.');
@@ -103,7 +103,7 @@ class ImageClient extends AbstractBaseApi
 	 * @throws \ErrorException
 	 * @return string Json response from ClarifAI.
 	 */
-	public function TrainModel($id) {
+	public function ModelTrain($id) {
 		if(!$this->IsTokenValid()) {
 			if($this->GenerateToken() === false) {
 				throw new \ErrorException('Token generation failed.');
@@ -152,7 +152,7 @@ class ImageClient extends AbstractBaseApi
 	 * @throws \ErrorException
 	 * @return string Json response from ClarifAI.
 	 */
-	public function AddInputs() {
+	public function InputsAdd() {
 		if(!isset($this->image) || !is_array($this->image)) {
 			throw new \LogicException('You must add at least one image via AddImage().');
 		}
@@ -171,16 +171,17 @@ class ImageClient extends AbstractBaseApi
 	}
 	
 	/**
-	 * Update an input with concepts.
+	 * Update an input by adding or deleting concepts for it.
+	 * The default action is to merge concepts to the given input id(s).
+	 * To delete a concept(s), pass 'remove' as the action variable.
 	 * 
-	 * @param string $id Input id to add concept to.
-	 * @param array $concepts An array of concepts to add.
+	 * @param string $action Action to be taken on the set concepts.
 	 * @return string Json response from ClarifAI.  
 	 */
-	public function UpdateInputs($id, $concepts) {
-		$build = array('id'=>$id, 'data'=>array('concepts'=>$concepts));
-		$data['inputs'][] = $build;
-		$data['action']='merge';
+	public function InputsUpdate($action='merge') {
+		if(!isset($this->concept) || !is_array($this->concept)) {
+			throw new \LogicException('You must add at least one concept via AddConcept()');
+		}
 		
 		if(!$this->IsTokenValid()) {
 			if($this->GenerateToken() === false) {
@@ -189,18 +190,14 @@ class ImageClient extends AbstractBaseApi
 		}
 		
 		$service = 'inputs';
-		$json = json_encode($data);
+		$json = json_encode($this->concept);
 		$result = $this->SendPatch($json, $service);
 		
 		return (Response::GetJson($result));
 	}
-	
-	public function DeleteInputConcepts() {
 		
-	}
-	
-	public function DeleteInputs() {
-		
+	public function InputsDelete() {
+			
 	}
 	
 	/**
@@ -209,7 +206,7 @@ class ImageClient extends AbstractBaseApi
 	 * @throws \ErrorException
 	 * @return string Json response from ClarifAI.
 	 */
-	public function GetInputs($id=null) {
+	public function InputsGet($id=null) {
 		if(!$this->IsTokenValid()) {
 			if($this->GenerateToken() === false) {
 				throw new \ErrorException('Token generation failed.');
@@ -217,8 +214,8 @@ class ImageClient extends AbstractBaseApi
 		}
 		
 		$service = 'inputs';
-		$id = array($id);
-		$result = $this->SendGet($id, $service);
+		$data = array($id);
+		$result = $this->SendGet($data, $service);
 		
 		return (Response::GetJson($result));
 	}
@@ -228,7 +225,7 @@ class ImageClient extends AbstractBaseApi
 	 * @throws \ErrorException
 	 * @return string Json response from ClarifAI.
 	 */
-	public function GetInputStatus() {
+	public function InputsGetStatus() {
 		if(!$this->IsTokenValid()) {
 			if($this->GenerateToken() === false) {
 				throw new \ErrorException('Token generation failed.');
@@ -303,6 +300,23 @@ class ImageClient extends AbstractBaseApi
 		$result = $this->SendPost($json, $service);
 		
 		return (Response::GetJson($result));
+	}
+	
+	/**
+	 * Prepare concepts for API call.  This stores the concept in $this->concept.  Calling AddConcept()
+	 * multiple times will build and array of concepts to be posted.
+	 * 
+	 * @param string $id Input ID to modify for this concept.
+	 * @param array $concepts Array of id=>value 
+	 * @return null
+	 */
+	public function AddConcept($id, $concepts) {
+		$data = array('id'=>$id, 'data'=>array('concepts'=>array()));
+		$data['data']['concepts'] = array($concepts);
+		
+		$this->concept['inputs'][] = $data;
+
+		return null;
 	}
 		
 	/**
