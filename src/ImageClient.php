@@ -15,6 +15,7 @@ class ImageClient extends AbstractBaseApi
 	public $data = array();
 	public $image;
 	public $search;
+	public $concept;
 	
 	
 	private $models = [
@@ -58,7 +59,7 @@ class ImageClient extends AbstractBaseApi
 	 * @throws \ErrorException
 	 * @return string Json response from ClarifAI.
 	 */
-	public function ModelUpdate($id, $concepts) {		
+	public function ModelUpdate($action='merge') {		
 		$build = array('id'=>$id, 'output_info'=>array('data'=>array('concepts'=>$concepts)));
 		$data['models'][] = $build;
 		$data['action']='merge';
@@ -190,14 +191,41 @@ class ImageClient extends AbstractBaseApi
 		}
 		
 		$service = 'inputs';
+		$this->concept['action']=$action;
 		$json = json_encode($this->concept);
+		
 		$result = $this->SendPatch($json, $service);
 		
 		return (Response::GetJson($result));
 	}
+
+	/**
+	 * Delete an image by its ID.  You can pass in either a single id as $id={ID1} or
+	 * you can submit an array of id's $id=array({ID1},{ID2},{ID3}).
+	 * @param mixed $id ID of image to delete
+	 * @throws \ErrorException
+	 * @return string Json response from ClarifAI.
+	 */
+	public function InputsDelete($id) {
+		if(!$this->IsTokenValid()) {
+			if($this->GenerateToken() === false) {
+				throw new \ErrorException('Token generation failed.');
+			}
+		}
 		
-	public function InputsDelete() {
-			
+		if(is_array($id)) {
+			$data['ids'] = $id;
+			$json = json_encode($data);
+			$service = 'inputs';
+		}
+		else {
+			$service = 'inputs/'.$id;
+			$json = '';
+		}
+		
+		$result = $this->SendDelete($json, $service);
+		
+		return (Response::GetJson($result));
 	}
 	
 	/**
@@ -312,7 +340,7 @@ class ImageClient extends AbstractBaseApi
 	 */
 	public function AddConcept($id, $concepts) {
 		$data = array('id'=>$id, 'data'=>array('concepts'=>array()));
-		$data['data']['concepts'] = array($concepts);
+		$data['data']['concepts'] = $concepts;
 		
 		$this->concept['inputs'][] = $data;
 
@@ -368,8 +396,18 @@ class ImageClient extends AbstractBaseApi
 	 *
 	 * @return null  
 	 */
-	public function ClearImage() {
+	public function ClearImages() {
 		unset($this->image);
+		return null;
+	}
+	
+	/**
+	 * Used to clear/reset $this->concept variable after adding a concept via AddConcept.
+	 *
+	 * @return null
+	 */
+	public function ClearConcepts() {
+		unset($this->concept);
 		return null;
 	}
 }

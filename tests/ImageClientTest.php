@@ -34,6 +34,15 @@ class ImageClientTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	/**
+	 * Test adding multiple concepts builds array of concepts.
+	 */
+	public function testAddConcept() {
+		$this->client->AddConcept('testid1', array(array('id'=>'dog', 'value'=>true)));
+		$this->client->AddConcept('testid2', array(array('id'=>'dog', 'value'=>false)));
+		$this->assertCount(2, $this->client->concept['inputs'], 'Adding multiple concepts failed.');
+	}
+	
+	/**
 	 * Test sending predict without an image.
 	 */
 	public function testPredictNoImage() {

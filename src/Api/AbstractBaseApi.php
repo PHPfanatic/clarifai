@@ -157,7 +157,7 @@ abstract class AbstractBaseApi implements AuthInterface
 	 * @param string $service appended to the apiurl when making the API call.
 	 * @return string
 	 */
-	public function SendDelete($service) {
+	public function SendDelete($data, $service) {
 		$ch = curl_init();
 	
 		$header = array();
@@ -166,6 +166,7 @@ abstract class AbstractBaseApi implements AuthInterface
 	
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 		curl_setopt($ch, CURLOPT_URL, $this->apiurl . '/' . $service);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 	
