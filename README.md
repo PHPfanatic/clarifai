@@ -4,39 +4,33 @@ Description
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.  
+These instructions will get you a copy of the library.  
 
-Add the package to your composer impelementation
+Add the package to your composer impelementation.
 ```
 composer require phpfanatic/clarifai
-
-```
-
-If you are using CakePHP you may need to update the composer.json file of the CakePHP app to have the following for namespacing to work correctly:
-```
- "autoload": {
-        "psr-4": {
-            "App\\": "src",
-            "PhpFanatic\\clarifAI\\": "./vendor/phpfanatic/clarifai/src"
-        }
-    },
 
 ```
 
 ### Requirements
 
 * PHP - 5.6, 7.0
+* cURL - *
 * PHPUnit - to run tests (optional).
 
 ### Example Usage
 
 ```
-Examples...
+use PhpFanatic\clarifAI\ImageClient;
 
+$client = new ImageClient([CLIENT_ID], [CLIENT_SECRET]);
+
+$client->AddImage('http://phpfanatic.com/projects/clarifai/cat.png');
+$result = $client->Predict();
 ```
 
 ##Documentation
-
+[PHPfanatic - ClarifAI documentation](https://github.com/PHPfanatic/clarifai/wiki/ClarifAI-Library-Documentation)
 
 ## Built With
 
@@ -52,4 +46,3 @@ Examples...
 ## License
 
 This project is licensed under the MIT License.
-

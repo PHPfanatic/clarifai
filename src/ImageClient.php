@@ -16,6 +16,7 @@ class ImageClient extends AbstractBaseApi
 	public $image;
 	public $search;
 	public $concept;
+	public $paginate;
 	
 	
 	private $models = [
@@ -24,7 +25,11 @@ class ImageClient extends AbstractBaseApi
 			'Weddings'=>'c386b7a870114f4a87477c0824499348',
 			'Travel'=>'eee28c313d69466f836ab83287a54ed9',
 			'Food'=>'bd367be194cf45149e75f01d59f77ba7',
-			'Color'=>'eeed0b6733a644cea07cf4c60f87ebb7'];
+			'Color'=>'eeed0b6733a644cea07cf4c60f87ebb7',
+			'Apparel'=>'e0be3b9d6a454f0493ac3a30784001ff',
+			'Celebrity'=>'e466caa0619f444ab97497640cefc4dc',
+			'Face'=>'a403429f2ddf4b49b307e318f00e528b'
+	];
 	
 	public function __construct($clientid, $clientsecret) {
 		parent::__construct($clientid, $clientsecret);
@@ -92,6 +97,11 @@ class ImageClient extends AbstractBaseApi
 		}
 		
 		$service = 'models';
+		
+		if(is_array($this->paginate)) {
+			$service = $service . '?page='.$this->paginate['page'].'&per_page='.$this->paginate['count'];
+		}
+		
 		$id = array($id);
 		$result = $this->SendGet($id, $service);
 		
@@ -118,7 +128,9 @@ class ImageClient extends AbstractBaseApi
 	}
 		
 	/**
-	 * Predict image content based on model passed in.
+	 * Predict image content based on model passed in.  You can pass in the name of existing ClarifAI models which will
+	 * be automatically converted to their hash strings or you can pass in your own hash string from a custom model
+	 * that you have created.
 	 * @param string $model 
 	 * @throws \LogicException
 	 * @throws \ErrorException
@@ -136,8 +148,8 @@ class ImageClient extends AbstractBaseApi
 		}
 		
 		// Custom model handler.
-		if(!array_key_exists($model, $models)) {
-			array_push($this->models, array('Custom'=>$model));
+		if(!array_key_exists($model, $this->models)) {
+			$this->models['Custom'] = $model;
 		}
 		
 		$service = 'models/' . $this->models[$model] . '/outputs';
@@ -242,6 +254,11 @@ class ImageClient extends AbstractBaseApi
 		}
 		
 		$service = 'inputs';
+		
+		if(is_array($this->paginate)) {
+			$service = $service . '?page='.$this->paginate['page'].'&per_page='.$this->paginate['count'];
+		}
+		
 		$data = array($id);
 		$result = $this->SendGet($data, $service);
 		
@@ -392,7 +409,53 @@ class ImageClient extends AbstractBaseApi
 	}
 	
 	/**
-	 * Used to clear/reset $this->image variable after adding an image via AddImage.
+	 * Set pagination for the next call.
+	 * @param int $page
+	 * @param int $count
+	 * @return null
+	 */
+	public function Paginate($page, $count) {
+		$this->paginate = array('page'=>$page, 'count'=>$count);
+		
+		return null;
+	}
+	
+	/**
+	 * Move pagination forward one page.
+	 * @throws \LogicException
+	 * @param int $page number of pages to move forward.
+	 * @return null
+	 */
+	public function PageForward($page=1) {
+		if(!is_array($this->paginate)) {
+			throw new \LogicException('You must initiate paginate first via Paginate()');	
+		}
+		
+		$this->paginate['page'] = $this->paginate['page']+$page;
+		
+		return null;
+	}
+	
+	/**
+	 * Move pagination back one page.
+	 * @throws \LogicException
+	 * @return null
+	 */
+	public function PageBack($page=1) {
+		if(!is_array($this->paginate)) {
+			throw new \LogicException('You must initiate paginate first via Paginate()');
+		}
+		
+		// Only adjust paginate page if we are not on page 1.
+		if($this->paginate['page'] > 1) {
+			$this->paginate['page'] = $this->paginate['page']-$page;
+		}
+				
+		return null;
+	}
+		
+	/**
+	 * Clear/reset $this->image variable after adding an image via AddImage.
 	 *
 	 * @return null  
 	 */
@@ -402,12 +465,21 @@ class ImageClient extends AbstractBaseApi
 	}
 	
 	/**
-	 * Used to clear/reset $this->concept variable after adding a concept via AddConcept.
+	 * Clear/reset $this->concept variable after adding a concept via AddConcept.
 	 *
 	 * @return null
 	 */
 	public function ClearConcepts() {
 		unset($this->concept);
+		return null;
+	}
+	
+	/**
+	 * Clear/rest $this->pagination.
+	 * @return NULL
+	 */
+	public function ClearPagination() {
+		unset($this->paginate);
 		return null;
 	}
 }

@@ -17,10 +17,38 @@ class ImageClientTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	/**
+	 * Test that adding paginate create the paginate array correctly.
+	 */
+	public function testPaginate() {
+		$this->client->Paginate(1, 20);
+		$this->assertEquals(1, $this->client->paginate['page'], 'Paginate page was not added.');
+	}
+	
+	/**
+	 * Test moving pagination forward x pages and verify the count is correct.
+	 */
+	public function testPageForward() {
+		$this->client->Paginate(1, 20);
+		$this->client->PageForward(5);
+		
+		$this->assertEquals(6, $this->client->paginate['page'], 'Page forward did not increment correctly.');
+	}
+	
+	/**
+	 * Test moving pagination back x pages and verify the count is correct.
+	 */
+	public function testPageBack() {
+		$this->client->Paginate(5, 20);
+		$this->client->PageBack(2);
+	
+		$this->assertEquals(3, $this->client->paginate['page'], 'Page back did not increment correctly.');
+	}
+	
+	/**
 	 * Test adding an image builds the correct structure.
 	 */
 	public function testAddImage() {
-		$this->client->AddImage('https://homepages.cae.wisc.edu/~ece533/images/cat.png');
+		$this->client->AddImage('http://phpfanatic.com/projects/clarifai/cat.png');
 		$this->assertArrayHasKey('url', $this->client->image['inputs'][0]['data']['image'], 'Adding an image failed.');
 	}
 	
@@ -28,8 +56,8 @@ class ImageClientTest extends PHPUnit_Framework_TestCase {
 	 * Test adding multiple images builds array of images.
 	 */
 	public function testAddImageMultiple() {
-		$this->client->AddImage('https://homepages.cae.wisc.edu/~ece533/images/cat1.png');
-		$this->client->AddImage('https://homepages.cae.wisc.edu/~ece533/images/cat2.png');
+		$this->client->AddImage('http://phpfanatic.com/projects/clarifai/cat.png');
+		$this->client->AddImage('http://phpfanatic.com/projects/clarifai/cat.png');
 		$this->assertCount(2, $this->client->image['inputs'], 'Adding multiple images failed.');
 	}
 	
@@ -49,7 +77,7 @@ class ImageClientTest extends PHPUnit_Framework_TestCase {
 		$this->expectException(LogicException::class);
 		$this->client->Predict();
 	}
-	
+		
 	/**
 	 * Test token validation is working as intended.
 	 */
