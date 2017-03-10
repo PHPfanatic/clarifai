@@ -61,13 +61,14 @@ class ImageClient extends AbstractBaseApi
 	 * Update a model with a concept
 	 * @param string $id Model ID to be updated.
 	 * @param array $concepts Array of concepts to be applied.
+	 * @param string $action action to apply merge|remove.
 	 * @throws \ErrorException
 	 * @return string Json response from ClarifAI.
 	 */
-	public function ModelUpdate($action='merge') {		
-		$build = array('id'=>$id, 'output_info'=>array('data'=>array('concepts'=>$concepts)));
+	public function ModelUpdate($id, $concept, $action='merge') {		
+		$build = array('id'=>$id, 'output_info'=>array('data'=>array('concepts'=>array($concept))));
 		$data['models'][] = $build;
-		$data['action']='merge';
+		$data['action']=$action;
 		
 		if(!$this->IsTokenValid()) {
 			if($this->GenerateToken() === false) {
@@ -78,7 +79,10 @@ class ImageClient extends AbstractBaseApi
 		$service = 'models';
 		$json = json_encode($data);
 		
-		$result = $this->SendPatch($json, $service);
+		echo $json;
+		exit;
+		
+		//$result = $this->SendPatch($json, $service);
 		
 		return (Response::GetJson($result));
 	}
@@ -360,7 +364,7 @@ class ImageClient extends AbstractBaseApi
 		$data['data']['concepts'] = $concepts;
 		
 		$this->concept['inputs'][] = $data;
-
+		
 		return null;
 	}
 		
@@ -406,6 +410,14 @@ class ImageClient extends AbstractBaseApi
 		$this->image['inputs'][] = $data;
 		
 		return null;
+	}
+	
+	/**
+	 * Returns json with each image that is currently active within the ImageClient object.
+	 * @return string
+	 */
+	public function ShowImage() {
+		return json_encode($this->image);
 	}
 	
 	/**
