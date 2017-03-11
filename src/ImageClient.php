@@ -295,6 +295,8 @@ class ImageClient extends AbstractBaseApi
 	 * @throws InvalidArgumentException
 	 * @throws ErrorException
 	 * @param mixed $term
+	 * @param string $by
+	 * @param bool $exists
 	 * @return string Json response from ClarifAI. 
 	 */
 	public function Search($term, $by='concept', $exists=true) {
