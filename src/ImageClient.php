@@ -153,10 +153,12 @@ class ImageClient extends AbstractBaseApi
 		
 		// Custom model handler.
 		if(!array_key_exists($model, $this->models)) {
-			$this->models['Custom'] = $model;
+			$service = 'models/' . $model . '/outputs';
+		}
+		else {
+			$service = 'models/' . $this->models[$model] . '/outputs';
 		}
 		
-		$service = 'models/' . $this->models[$model] . '/outputs';
 		$json = json_encode($this->image);
 		$result = $this->SendPost($json, $service);
 		
