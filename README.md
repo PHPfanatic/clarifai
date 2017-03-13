@@ -19,9 +19,9 @@ or
 Add the package manually by downloading the most recent stable version release from Github and include the src/ directory
 within your own project.
 
-* [zip](https://github.com/PHPfanatic/clarifai/archive/0.1.1-alpha.zip)
+* [zip](https://github.com/PHPfanatic/clarifai/archive/1.0.0.zip)
 
-* [tar](https://github.com/PHPfanatic/clarifai/archive/0.1.1-alpha.gz)
+* [tar](https://github.com/PHPfanatic/clarifai/archive/1.0.0.gz)
 
 ### Requirements
 
