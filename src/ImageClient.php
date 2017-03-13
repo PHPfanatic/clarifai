@@ -4,7 +4,7 @@
  *
  * @author   Nick White <git@phpfanatic.com>
  * @link     https://github.com/PHPfanatic/clarifai
- * @version  0.1.1
+ * @version  1.0.0
  */
 
 use PhpFanatic\clarifAI\Api\AbstractBaseApi;
@@ -66,7 +66,7 @@ class ImageClient extends AbstractBaseApi
 	 * @return string Json response from ClarifAI.
 	 */
 	public function ModelUpdate($id, $concept, $action='merge') {		
-		$build = array('id'=>$id, 'output_info'=>array('data'=>array('concepts'=>array($concept))));
+		$build = array('id'=>$id, 'output_info'=>array('data'=>array('concepts'=>$concept)));
 		$data['models'][] = $build;
 		$data['action']=$action;
 		
@@ -78,11 +78,8 @@ class ImageClient extends AbstractBaseApi
 		
 		$service = 'models';
 		$json = json_encode($data);
-		
-		echo $json;
-		exit;
-		
-		//$result = $this->SendPatch($json, $service);
+				
+		$result = $this->SendPatch($json, $service);
 		
 		return (Response::GetJson($result));
 	}
