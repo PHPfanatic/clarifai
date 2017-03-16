@@ -85,4 +85,13 @@ class ImageClientTest extends PHPUnit_Framework_TestCase {
 		$response = $this->client->IsTokenValid();
 		$this->assertFalse($response, 'Token validation failed');
 	}
+	
+	/**
+	 * Validate that setting language works as intended.
+	 */
+	public function testSetLanguage() {
+		$this->client->SetLanguage('es');
+		$result = $this->client->ShowLanguage();
+		$this->assertEquals('es', $result, 'Language modifier was not set.');
+	}
 }

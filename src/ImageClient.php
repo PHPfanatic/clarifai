@@ -4,7 +4,7 @@
  *
  * @author   Nick White <git@phpfanatic.com>
  * @link     https://github.com/PHPfanatic/clarifai
- * @version  1.0.0
+ * @version  1.1.0
  */
 
 use PhpFanatic\clarifAI\Api\AbstractBaseApi;
@@ -29,6 +29,32 @@ class ImageClient extends AbstractBaseApi
 			'Apparel'=>'e0be3b9d6a454f0493ac3a30784001ff',
 			'Celebrity'=>'e466caa0619f444ab97497640cefc4dc',
 			'Face'=>'a403429f2ddf4b49b307e318f00e528b'
+	];
+	
+	private $languages = [
+			'ar'=>'Arabic',
+			'bn'=>'Bengali',
+			'da'=>'Danish',
+			'de'=>'German',
+			'en'=>'English',
+			'es'=>'Spanish',
+			'fi'=>'Finnish',
+			'fr'=>'French',
+			'hi'=>'Hindi',
+			'hu'=>'Hungarian',
+			'it'=>'Italian',
+			'ja'=>'Japanese',
+			'ko'=>'Korean',
+			'nl'=>'Dutch',
+			'no'=>'Norwegian',
+			'pa'=>'Punjabi',
+			'pl'=>'Polish',
+			'pt'=>'Portuguese',
+			'ru'=>'Russian',
+			'sv'=>'Swedish',
+			'tr'=>'Turkish',
+			'zh'=>'Chinese Simplified',
+			'zh-TW'=>'Chinese Traditional'
 	];
 	
 	public function __construct($clientid, $clientsecret) {
@@ -154,6 +180,12 @@ class ImageClient extends AbstractBaseApi
 		}
 		else {
 			$service = 'models/' . $this->models[$model] . '/outputs';
+		}
+		
+		// Language change requested, but only for public models.  Per Clarifai documentatin, language support is only 
+		// available on this public model.
+		if(isset($this->language) && $model=='General') {
+			$this->image['model']['output_info']['output_config']['language'] = $this->language;
 		}
 		
 		$json = json_encode($this->image);
@@ -334,6 +366,11 @@ class ImageClient extends AbstractBaseApi
 			)
 		);
 		
+		// If a change is language has been requested.
+		if(isset($this->language) && $by == 'concept') {
+			$this->search['query']['language'] = $this->language;
+		}
+		
 		// Dynamically adjust output/input for image search.
 		if($by === 'image') {
 			$this->search['query']['ands'][0]['output'] = array('input'=>$this->search['query']['ands'][0]['output']);
@@ -347,6 +384,8 @@ class ImageClient extends AbstractBaseApi
 		
 		$service = 'searches';
 		$json = json_encode($this->search);
+		//echo $json;
+		//exit;
 		$result = $this->SendPost($json, $service);
 		
 		return (Response::GetJson($result));
@@ -419,6 +458,34 @@ class ImageClient extends AbstractBaseApi
 	 */
 	public function ShowImage() {
 		return json_encode($this->image);
+	}
+	
+	/**
+	 * Set the return language to use.
+	 * @param string $language
+	 * @throws \InvalidArgumentException
+	 * @return null
+	 */
+	public function SetLanguage($language) {
+		if(!array_key_exists($language, $this->languages)) {
+			throw new \InvalidArgumentException('The language code you have requested is invalid.');
+		}
+		
+		$this->language = $language;
+		
+		return null;
+	}
+	
+	/**
+	 * Returns the current set language.
+	 * @return string
+	 */
+	public function ShowLanguage() {
+		if(isset($this->language)) {
+			return $this->language;
+		}
+		
+		return '';
 	}
 	
 	/**

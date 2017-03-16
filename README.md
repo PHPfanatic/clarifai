@@ -20,9 +20,9 @@ or
 Add the package manually by downloading the most recent stable version release from Github and include the src/ directory
 within your own project.
 
-* [zip](https://github.com/PHPfanatic/clarifai/archive/1.0.0.zip)
+* [zip](https://github.com/PHPfanatic/clarifai/archive/1.1.0.zip)
 
-* [tar](https://github.com/PHPfanatic/clarifai/archive/1.0.0.gz)
+* [tar](https://github.com/PHPfanatic/clarifai/archive/1.1.0.gz)
 
 ### Requirements
 
@@ -42,9 +42,15 @@ $client->AddImage('http://phpfanatic.com/projects/clarifai/cat.png');
 $result = $client->Predict();
 ```
 
-##Documentation
+## Documentation
 
 [PHPfanatic - ClarifAI documentation](https://github.com/PHPfanatic/clarifai/wiki/Documentation)
+
+## Change History
+1.1.0 - Added multi language support.
+1.0.0 - Public API release
+0.1.1 - Development alpha release
+
 
 ## Built With
 
