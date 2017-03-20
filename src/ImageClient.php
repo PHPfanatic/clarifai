@@ -126,7 +126,7 @@ class ImageClient extends AbstractBaseApi
 		$service = 'models';
 		
 		if(is_array($this->paginate)) {
-			$service = $service . '?page='.$this->paginate['page'].'&per_page='.$this->paginate['count'];
+			$service .= '?page='.$this->paginate['page'].'&per_page='.$this->paginate['count'];
 		}
 		
 		$id = array($id);

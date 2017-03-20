@@ -44,7 +44,7 @@ $result = $client->Predict();
 
 ## Documentation
 
-[PHPfanatic - ClarifAI documentation](https://github.com/PHPfanatic/clarifai/wiki/Documentation)
+[PHPfanatic - ClarifAI documentation](https://github.com/PHPfanatic/clarifai/wiki/)
 
 ## Change History
 * 1.1.0 - Added multi language support.
