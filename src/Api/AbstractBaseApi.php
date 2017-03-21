@@ -211,7 +211,7 @@ abstract class AbstractBaseApi implements AuthInterface
 		$ch = curl_init();
 		
 		$data = implode('/', $data);
-			
+		
 		$header = array();
 		$header[] = 'Content-type: application/json';
 		$header[] = 'Authorization: Bearer ' . $this->access['token'];

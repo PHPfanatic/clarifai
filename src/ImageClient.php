@@ -111,12 +111,53 @@ class ImageClient extends AbstractBaseApi
 	}
 	
 	/**
-	 * Retrieve a list of models
-	 * @param string $id Model ID
+	 * Delete all models, delete specific model or delete a specific version of a model.
+	 * As of 3/20/2017 'delete_all' must be passed when an ID is not specified.  This is not reflected
+	 * in the ClarifAI documentation however it is needed.
+	 * 
+	 * @param string $id
+	 * @param string $version
 	 * @throws \ErrorException
 	 * @return string Json response from ClarifAI.
 	 */
-	public function ModelGet($id=null) {
+	public function ModelDelete($id=null, $version=null) {
+		
+		if(!$this->IsTokenValid()) {
+			if($this->GenerateToken() === false) {
+				throw new \ErrorException('Token generation failed.');
+			}
+		}
+		
+		$service="models";
+		
+		if($id != null) {
+			$service .= '/' . $id;
+		}
+		
+		if($id != null && $version != null) {
+			$service .= '/versions/' . $version;
+		}
+		
+		if($id == null) {
+			$data = array('delete_all'=>true);
+			$json = json_encode($data);
+		}else{
+			$json = '';
+		}
+		
+		$result = $this->SendDelete($json, $service);
+		
+		return (Response::GetJson($result));
+	}
+	
+	/**
+	 * Retrieve a list of models
+	 * @param string $id Model ID
+	 * @param string $version Version ID
+	 * @throws \ErrorException
+	 * @return string Json response from ClarifAI.
+	 */
+	public function ModelGet($id=null, $version=null) {
 		if(!$this->IsTokenValid()) {
 			if($this->GenerateToken() === false) {
 				throw new \ErrorException('Token generation failed.');
@@ -129,8 +170,13 @@ class ImageClient extends AbstractBaseApi
 			$service .= '?page='.$this->paginate['page'].'&per_page='.$this->paginate['count'];
 		}
 		
-		$id = array($id);
-		$result = $this->SendGet($id, $service);
+		$data = array($id);
+		
+		if($version != null && $id != null) {
+			array_push($data, 'versions', $version);
+		}
+		
+		$result = $this->SendGet($data, $service);
 		
 		return (Response::GetJson($result));
 	}
