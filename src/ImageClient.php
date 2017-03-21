@@ -111,7 +111,7 @@ class ImageClient extends AbstractBaseApi
 	}
 	
 	/**
-	 * Delete all models, delete specific model or delete a specific version of a model.
+	 * Delete all models, delete specific model id or delete a specific version of a model.
 	 * As of 3/20/2017 'delete_all' must be passed when an ID is not specified.  This is not reflected
 	 * in the ClarifAI documentation however it is needed.
 	 * 
@@ -151,7 +151,7 @@ class ImageClient extends AbstractBaseApi
 	}
 	
 	/**
-	 * Retrieve a list of models
+	 * Retrieve a list of models, models by id or models by version/id.
 	 * @param string $id Model ID
 	 * @param string $version Version ID
 	 * @throws \ErrorException
@@ -299,19 +299,27 @@ class ImageClient extends AbstractBaseApi
 	 * @throws \ErrorException
 	 * @return string Json response from ClarifAI.
 	 */
-	public function InputsDelete($id) {
+	public function InputsDelete($id=null) {
 		if(!$this->IsTokenValid()) {
 			if($this->GenerateToken() === false) {
 				throw new \ErrorException('Token generation failed.');
 			}
 		}
-		
+
 		if(is_array($id)) {
+			//Delete multiple input
 			$data['ids'] = $id;
 			$json = json_encode($data);
 			$service = 'inputs';
 		}
+		elseif($id == null){
+			//Delete all inputs
+			$data = array('delete_all'=>true);
+			$json = json_encode($data);
+			$service = 'inputs';
+		}
 		else {
+			//Delete specific input
 			$service = 'inputs/'.$id;
 			$json = '';
 		}
