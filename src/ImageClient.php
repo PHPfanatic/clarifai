@@ -230,7 +230,7 @@ class ImageClient extends AbstractBaseApi
 		
 		// Language change requested, but only for public models.  Per Clarifai documentatin, language support is only 
 		// available on this public model.
-		if(isset($this->language) && $model=='General') {
+		if((isset($this->language)) && ($model=='General' || $model=='aaa03c23b3724a16a56b629203edc62c')) {
 			$this->image['model']['output_info']['output_config']['language'] = $this->language;
 		}
 		
