@@ -20,9 +20,9 @@ or
 Add the package manually by downloading the most recent stable version release from Github and include the src/ directory
 within your own project.
 
-* [zip](https://github.com/PHPfanatic/clarifai/archive/1.1.0.zip)
+* [zip](https://github.com/PHPfanatic/clarifai/archive/1.2.0.zip)
 
-* [tar](https://github.com/PHPfanatic/clarifai/archive/1.1.0.gz)
+* [tar](https://github.com/PHPfanatic/clarifai/archive/1.2.0.gz)
 
 ### Requirements
 
@@ -47,10 +47,15 @@ $result = $client->Predict();
 [PHPfanatic - ClarifAI documentation](https://github.com/PHPfanatic/clarifai/wiki/)
 
 ## Change History
+* 1.2.0 - Added model delete support, updated inputs to allow delete all.
 * 1.1.0 - Added multi language support.
-* 1.0.0 - Public API release
-* 0.1.1 - Development alpha release
+* 1.0.0 - Public API release.
+* 0.1.1 - Development alpha release.
 
+## Look Ahead (what might be changed in the future.)
+
+* Removing cURL as a requirement.
+* Combining POST,DELETE,PATCH into a single method.
 
 ## Built With
 
