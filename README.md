@@ -1,6 +1,6 @@
 # Clarifai PHP Library 
 [![Build Status](https://travis-ci.org/PHPfanatic/clarifai.svg?branch=master)](https://travis-ci.org/PHPfanatic/clarifai)
-[![GitHub version](https://badge.fury.io/gh/phpfanatic%2Fclarifai.png)]
+[![GitHub version](https://badge.fury.io/gh/phpfanatic%2Fclarifai.png)](https://badge.fury.io/gh/phpfanatic%2Fclarifai)
 
 Clarifai API Library, PHP/Composer implementation of the clarifai api. ([clarifai](https://clarifai.com/)).
 PHPfanatic's PHP library brings you the power of clarifai's image recognition API wrapped in an easy to use PHP library that you can
