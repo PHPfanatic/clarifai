@@ -62,6 +62,16 @@ class ImageClientTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	/**
+	 * Test that adding more than 128 images throws and error.
+	 */
+	public function testAddMaxImage() {
+		$this->expectException(ErrorException::class);
+		for ($i = 0; $i < 130; $i++) {
+			$this->client->AddImage('http://phpfanatic.com/projects/clarifai/cat.png');
+		}
+	}
+	
+	/**
 	 * Test adding multiple concepts builds array of concepts.
 	 */
 	public function testAddConcept() {

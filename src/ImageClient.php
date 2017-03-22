@@ -471,6 +471,7 @@ class ImageClient extends AbstractBaseApi
 	 * @param array $concept optional concept data, see documentation for structure.
 	 * @param array $metadata optional metadata, see documentation for structure.
 	 * @param array $crop optional image crop data, see documentaiton for structure.
+	 * @throws ErrorException
 	 * @return null
 	 */
 	public function AddImage($image, $id='', $concept=array(), $metadata=array(), $crop=array()) {
@@ -502,6 +503,10 @@ class ImageClient extends AbstractBaseApi
 		}
 		
 		$this->image['inputs'][] = $data;
+		
+		if(count($this->image['inputs']) > 128 ) {
+			throw new \ErrorException('Image input maximum of 128 exceeded.');
+		}
 		
 		return null;
 	}
