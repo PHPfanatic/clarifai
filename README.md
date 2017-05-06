@@ -10,7 +10,7 @@ Build smarter apps faster with Clarifai’s powerful visual recognition technology
 
 ## Getting Started
 
-Add the package to your composer impelementation.
+Add the package to your composer implementation.
 ```
 composer require phpfanatic/clarifai
 ```
