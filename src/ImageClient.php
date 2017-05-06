@@ -4,7 +4,7 @@
  *
  * @author   Nick White <git@phpfanatic.com>
  * @link     https://github.com/PHPfanatic/clarifai
- * @version  1.2.0
+ * @version  1.2.1
  */
 
 use PhpFanatic\clarifAI\Api\AbstractBaseApi;
@@ -28,7 +28,11 @@ class ImageClient extends AbstractBaseApi
 			'Color'=>'eeed0b6733a644cea07cf4c60f87ebb7',
 			'Apparel'=>'e0be3b9d6a454f0493ac3a30784001ff',
 			'Celebrity'=>'e466caa0619f444ab97497640cefc4dc',
-			'Face'=>'a403429f2ddf4b49b307e318f00e528b'
+			'Face'=>'a403429f2ddf4b49b307e318f00e528b',
+			'Demographics'=>'c0c0ac362b03416da06ab3fa36fb58e3',
+			'Focus'=>'c2cf7cecd8a6427da375b9f35fcd2381',
+			'Logo'=>'c443119bf2ed4da98487520d01a0b1e3',
+			'Embedding'=>'bbb5f41425b8468d9b7a554ff10f8581'
 	];
 	
 	private $languages = [
@@ -131,7 +135,7 @@ class ImageClient extends AbstractBaseApi
 		$service="models";
 		
 		if($id != null) {
-			$service .= '/' . $id;
+			$service .= '/' . urlencode($id);
 		}
 		
 		if($id != null && $version != null) {
@@ -194,7 +198,7 @@ class ImageClient extends AbstractBaseApi
 			}
 		}
 		
-		$service = 'models/'.$id.'/versions';
+		$service = 'models/'.urlencode($id).'/versions';
 		$result = $this->SendPost(null, $service);
 		
 		return (Response::GetJson($result));
@@ -222,7 +226,7 @@ class ImageClient extends AbstractBaseApi
 		
 		// Custom model handler.
 		if(!array_key_exists($model, $this->models)) {
-			$service = 'models/' . $model . '/outputs';
+			$service = 'models/' . urlencode($model) . '/outputs';
 		}
 		else {
 			$service = 'models/' . $this->models[$model] . '/outputs';
