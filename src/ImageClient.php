@@ -335,7 +335,7 @@ class ImageClient extends AbstractBaseApi
 	
 	/**
 	 * Return inputs that you have indexed, you may pass an ID to return a specific input.
-	 * @param string $data
+	 * @param string $id
 	 * @throws \ErrorException
 	 * @return string Json response from ClarifAI.
 	 */
@@ -349,7 +349,7 @@ class ImageClient extends AbstractBaseApi
 		$service = 'inputs';
 		
 		if(is_array($this->paginate)) {
-			$service = $service . '?page='.$this->paginate['page'].'&per_page='.$this->paginate['count'];
+			$id = $id . '?page='.$this->paginate['page'].'&per_page='.$this->paginate['count'];
 		}
 		
 		$data = array($id);
