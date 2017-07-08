@@ -4,7 +4,7 @@
  *
  * @author   Nick White <git@phpfanatic.com>
  * @link     https://github.com/PHPfanatic/clarifai
- * @version  1.2.1
+ * @version  1.2.2
  */
 
 class Response

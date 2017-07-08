@@ -20,9 +20,9 @@ or
 Add the package manually by downloading the most recent stable version release from Github and include the src/ directory
 within your own project.
 
-* [zip](https://github.com/PHPfanatic/clarifai/archive/1.2.1.zip)
+* [zip](https://github.com/PHPfanatic/clarifai/archive/1.2.2.zip)
 
-* [tar](https://github.com/PHPfanatic/clarifai/archive/1.2.1.gz)
+* [tar](https://github.com/PHPfanatic/clarifai/archive/1.2.2.gz)
 
 ### Requirements
 
@@ -38,7 +38,7 @@ use PhpFanatic\clarifAI\ImageClient;
 
 $client = new ImageClient([CLIENT_ID], [CLIENT_SECRET]);
 
-$client->AddImage('http://phpfanatic.com/projects/clarifai/cat.png');
+$client->AddImage('http://phpfanatic.com/projects/clarifai/dog.jpg');
 $result = $client->Predict();
 ```
 
@@ -47,6 +47,7 @@ $result = $client->Predict();
 [PHPfanatic - ClarifAI documentation](https://github.com/PHPfanatic/clarifai/wiki/)
 
 ## Change History
+* 1.2.2 - Fixed malformed url bug when you paginate a get request. (credit: @mhdere)
 * 1.2.1 - Fixed urlencode bug (credit: keithslater), added additional Clarifai models.
 * 1.2.0 - Added model delete support, updated inputs to allow delete all.
 * 1.1.0 - Added multi language support.

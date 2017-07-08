@@ -6,7 +6,7 @@
  *
  * @author   Nick White <git@phpfanatic.com>
  * @link     https://github.com/PHPfanatic/clarifai
- * @version  1.2.1
+ * @version  1.2.2
  */
 
 abstract class AbstractBaseApi implements AuthInterface
@@ -210,14 +210,20 @@ abstract class AbstractBaseApi implements AuthInterface
 	public function SendGet($data=array(), $service='inputs') {
 		$ch = curl_init();
 		
-		$data = implode('/', $data);
+		$data = implode('/', array_filter($data));
 		
 		$header = array();
 		$header[] = 'Content-type: application/json';
 		$header[] = 'Authorization: Bearer ' . $this->access['token'];
 		
+		if($data === '') {
+			$url = $this->apiurl . '/' . $service;
+		} else {
+			$url = $this->apiurl . '/' . $service . '/' . $data;
+		}
+		
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-		curl_setopt($ch, CURLOPT_URL, $this->apiurl . '/' . $service . '/' . $data);
+		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		
 		$result = curl_exec($ch);
