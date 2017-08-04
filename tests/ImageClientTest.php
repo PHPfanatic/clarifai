@@ -87,6 +87,13 @@ class ImageClientTest extends PHPUnit_Framework_TestCase {
 		$this->expectException(LogicException::class);
 		$this->client->Predict();
 	}
+
+	/**
+	 * Test User-Agent header
+	 */
+	public function testUserAgent() {
+		$this->assertEquals('User-Agent: Clarifai PHP (https://github.com/PHPfanatic/clarifai);1.2.2;' . phpversion(), $this->client->UserAgent());
+	}
 		
 	/**
 	 * Test token validation is working as intended.
