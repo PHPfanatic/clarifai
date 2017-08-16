@@ -13,6 +13,7 @@ abstract class AbstractBaseApi implements AuthInterface
 {
 	private $clientid = null;
 	private $clientsecret = null;
+	private $clientversion = '1.2.2';
 	private $endpoint = 'https://api.clarifai.com';
 	private $version = 'v2';
 	private $apiurl = null;
@@ -46,6 +47,22 @@ abstract class AbstractBaseApi implements AuthInterface
 	 */
 	public function SetClientSecret($clientsecret) {
 		$this->clientsecret = $clientsecret;
+	}
+	
+	/**
+	 * Place holder for future setting of client version.
+	 * @param string $clientversion
+	 */
+	public function GetClientVersion() {
+		return $this->clientversion;
+	}
+	
+	/**
+	 * Returns the custom agent header.  This was a ClarifAI request to better help them debug client inquiries.
+	 * @return string
+	 */
+	public function GetClientAgent() {
+		return 'Clarifai PHP (https://github.com/PHPfanatic/clarifai);'.$this->GetClientVersion().';'.phpversion();
 	}
 	
 	/**
@@ -104,6 +121,7 @@ abstract class AbstractBaseApi implements AuthInterface
 		
 		$header = array();
 		$header[] = 'Content-type: application/json';
+		$header[] = $this->GetClientAgent();
 		
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
@@ -138,6 +156,7 @@ abstract class AbstractBaseApi implements AuthInterface
 		$header = array();
 		$header[] = 'Content-type: application/json';
 		$header[] = 'Authorization: Bearer ' . $this->access['token'];
+		$header[] = $this->GetClientAgent();
 		
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
@@ -163,6 +182,7 @@ abstract class AbstractBaseApi implements AuthInterface
 		$header = array();
 		$header[] = 'Content-type: application/json';
 		$header[] = 'Authorization: Bearer ' . $this->access['token'];
+		$header[] = $this->GetClientAgent();
 	
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
@@ -188,6 +208,7 @@ abstract class AbstractBaseApi implements AuthInterface
 		$header = array();
 		$header[] = 'Content-type: application/json';
 		$header[] = 'Authorization: Bearer ' . $this->access['token'];
+		$header[] = $this->GetClientAgent();
 	
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PATCH");
@@ -215,6 +236,7 @@ abstract class AbstractBaseApi implements AuthInterface
 		$header = array();
 		$header[] = 'Content-type: application/json';
 		$header[] = 'Authorization: Bearer ' . $this->access['token'];
+		$header[] = $this->GetClientAgent();
 		
 		if($data === '') {
 			$url = $this->apiurl . '/' . $service;

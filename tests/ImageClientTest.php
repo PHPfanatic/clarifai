@@ -104,4 +104,20 @@ class ImageClientTest extends PHPUnit_Framework_TestCase {
 		$result = $this->client->ShowLanguage();
 		$this->assertEquals('es', $result, 'Language modifier was not set.');
 	}
+	
+	/**
+	 * Validate that the client version is of the correct format.
+	 */
+	public function testGetClientVersion() {
+		$clientversion = $this->client->GetClientVersion();
+		$this->assertRegExp('/^\d{1,3}[.]\d{1,3}[.]\d{1,3}$/', $clientversion);
+	}
+	
+	/**
+	 * Validate that client agent is returned properly.
+	 */
+	public function testGetClientAgent() {
+		$clientagent = $this->client->GetClientAgent();
+		$this->assertRegExp('//', $clientagent);
+	}
 }
