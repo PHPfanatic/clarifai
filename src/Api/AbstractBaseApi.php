@@ -6,14 +6,14 @@
  *
  * @author   Nick White <git@phpfanatic.com>
  * @link     https://github.com/PHPfanatic/clarifai
- * @version  1.2.2
+ * @version  1.2.3
  */
 
 abstract class AbstractBaseApi implements AuthInterface
 {
 	private $clientid = null;
 	private $clientsecret = null;
-	private $clientversion = '1.2.2';
+	private $clientversion = '1.2.3';
 	private $endpoint = 'https://api.clarifai.com';
 	private $version = 'v2';
 	private $apiurl = null;
@@ -121,15 +121,16 @@ abstract class AbstractBaseApi implements AuthInterface
 		
 		$header = array();
 		$header[] = 'Content-type: application/json';
-		$header[] = $this->GetClientAgent();
-		
+				
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_setopt($ch, CURLOPT_USERPWD, $this->clientid . ":" . $this->clientsecret);
 		curl_setopt($ch, CURLOPT_URL, $this->apiurl . '/token');
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_USERAGENT, $this->GetClientAgent());
+
+		$result = json_decode(curl_exec($ch), true);
 		
-		$result = json_decode(curl_exec($ch), true);	
 		curl_close($ch);
 		
 		if($result['status']['code'] == '10000') {
@@ -156,13 +157,13 @@ abstract class AbstractBaseApi implements AuthInterface
 		$header = array();
 		$header[] = 'Content-type: application/json';
 		$header[] = 'Authorization: Bearer ' . $this->access['token'];
-		$header[] = $this->GetClientAgent();
-		
+				
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 		curl_setopt($ch, CURLOPT_URL, $this->apiurl . '/' . $service);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_USERAGENT, $this->GetClientAgent());
 		
 		$result = curl_exec($ch);
 		curl_close($ch);
@@ -182,13 +183,13 @@ abstract class AbstractBaseApi implements AuthInterface
 		$header = array();
 		$header[] = 'Content-type: application/json';
 		$header[] = 'Authorization: Bearer ' . $this->access['token'];
-		$header[] = $this->GetClientAgent();
 	
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 		curl_setopt($ch, CURLOPT_URL, $this->apiurl . '/' . $service);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_USERAGENT, $this->GetClientAgent());
 	
 		$result = curl_exec($ch);
 		curl_close($ch);
@@ -208,13 +209,13 @@ abstract class AbstractBaseApi implements AuthInterface
 		$header = array();
 		$header[] = 'Content-type: application/json';
 		$header[] = 'Authorization: Bearer ' . $this->access['token'];
-		$header[] = $this->GetClientAgent();
 	
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PATCH");
 		curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 		curl_setopt($ch, CURLOPT_URL, $this->apiurl . '/' . $service);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_USERAGENT, $this->GetClientAgent());
 	
 		$result = curl_exec($ch);
 		curl_close($ch);
@@ -236,7 +237,6 @@ abstract class AbstractBaseApi implements AuthInterface
 		$header = array();
 		$header[] = 'Content-type: application/json';
 		$header[] = 'Authorization: Bearer ' . $this->access['token'];
-		$header[] = $this->GetClientAgent();
 		
 		if($data === '') {
 			$url = $this->apiurl . '/' . $service;
@@ -247,6 +247,7 @@ abstract class AbstractBaseApi implements AuthInterface
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_USERAGENT, $this->GetClientAgent());	
 		
 		$result = curl_exec($ch);
 		curl_close($ch);
