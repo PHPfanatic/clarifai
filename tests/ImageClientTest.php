@@ -112,12 +112,4 @@ class ImageClientTest extends PHPUnit_Framework_TestCase {
 		$clientversion = $this->client->GetClientVersion();
 		$this->assertRegExp('/^\d{1,3}[.]\d{1,3}[.]\d{1,3}$/', $clientversion);
 	}
-	
-	/**
-	 * Validate that client agent is returned properly.
-	 */
-	public function testGetClientAgent() {
-		$clientagent = $this->client->GetClientAgent();
-		$this->assertRegExp('//', $clientagent);
-	}
 }
