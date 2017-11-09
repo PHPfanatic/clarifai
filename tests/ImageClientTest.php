@@ -86,15 +86,7 @@ class ImageClientTest extends PHPUnit_Framework_TestCase {
 		$this->expectException(LogicException::class);
 		$this->client->Predict();
 	}
-		
-	/**
-	 * Test token validation is working as intended.
-	 */
-	public function testIsTokenValid() {
-		$response = $this->client->IsTokenValid();
-		$this->assertFalse($response, 'Token validation failed');
-	}
-	
+			
 	/**
 	 * Validate that setting language works as intended.
 	 */
