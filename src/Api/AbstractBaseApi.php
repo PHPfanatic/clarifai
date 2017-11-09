@@ -6,13 +6,13 @@
  *
  * @author   Nick White <git@phpfanatic.com>
  * @link     https://github.com/PHPfanatic/clarifai
- * @version  2.0.0
+ * @version  2.0.1
  */
 
 abstract class AbstractBaseApi implements AuthInterface
 {
 	public $apikey = null;
-	private $clientversion = '1.2.3';
+	private $clientversion = '2.0.1';
 	private $endpoint = 'https://api.clarifai.com';
 	private $version = 'v2';
 	private $apiurl = null;
