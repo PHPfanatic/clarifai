@@ -6,49 +6,36 @@
  *
  * @author   Nick White <git@phpfanatic.com>
  * @link     https://github.com/PHPfanatic/clarifai
- * @version  1.2.3
+ * @version  2.0.0
  */
 
 abstract class AbstractBaseApi implements AuthInterface
 {
-	private $clientid = null;
-	private $clientsecret = null;
+	public $apikey = null;
 	private $clientversion = '1.2.3';
 	private $endpoint = 'https://api.clarifai.com';
 	private $version = 'v2';
 	private $apiurl = null;
-	
-	public $access = ['token'=>null, 'token_time'=>null, 'token_expires'=>null];
-	
+		
 	/**
 	 * Initial ImageClient setup.
 	 * @param string $clientid
 	 * @param string $clientsecret
 	 */
-	public function __construct($clientid, $clientsecret) {
-		$this->SetClientId($clientid);
-		$this->SetClientSecret($clientsecret);
+	public function __construct($apikey) {
+		$this->SetApiKey($apikey);
 		$this->SetApiUrl();
 	}
 	
 	/**
-	 * Set client id
+	 * Set api key
 	 * {@inheritDoc}
-	 * @see \PhpFanatic\clarifAI\Api\AuthInterface::SetClientId()
+	 * @see \PhpFanatic\clarifAI\Api\AuthInterface::SetApiKey()
 	 */
-	public function SetClientId($clientid) {
-		$this->clientid = $clientid;
+	public function SetApiKey($apikey) {
+		$this->apikey = $apikey;
 	}
-
-	/**
-	 * Set client secret
-	 * {@inheritDoc}
-	 * @see \PhpFanatic\clarifAI\Api\AuthInterface::SetClientSecret()
-	 */
-	public function SetClientSecret($clientsecret) {
-		$this->clientsecret = $clientsecret;
-	}
-	
+		
 	/**
 	 * Place holder for future setting of client version.
 	 * @param string $clientversion
@@ -93,58 +80,20 @@ abstract class AbstractBaseApi implements AuthInterface
 	}
 		
 	/**
-	 * Validate if a OAUTH token is set and if it is valid.
+	 * Validate if a Api Key is set and if it is valid.
 	 * {@inheritDoc}
 	 * @see \PhpFanatic\clarifAI\Api\AuthInterface::IsTokenValid()
 	 * @return bool
 	 */
-	public function IsTokenValid() {
-		if(!isset($this->access['token'])) {
-			return false;
-		}
-	
-		if(((int) date('U') - $this->access['token_time']) < $this->access['token_expires']) {
+	public function IsApiKeySet() {
+		if(!isset($this->apikey) && is_null($this->apikey)) {
 			return false;
 		}
 	
 		return true;
 	}
 	
-	/**
-	 * Generate OAUTH token and set the access variable as needed.
-	 * {@inheritDoc}
-	 * @see \PhpFanatic\clarifAI\Api\AuthInterface::GenerateToken()
-	 * @return bool
-	 */
-	public function GenerateToken() {
-		$ch = curl_init();
-		
-		$header = array();
-		$header[] = 'Content-type: application/json';
-				
-		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-		curl_setopt($ch, CURLOPT_USERPWD, $this->clientid . ":" . $this->clientsecret);
-		curl_setopt($ch, CURLOPT_URL, $this->apiurl . '/token');
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_USERAGENT, $this->GetClientAgent());
-
-		$result = json_decode(curl_exec($ch), true);
-		
-		curl_close($ch);
-		
-		if($result['status']['code'] == '10000') {
-			$this->access['token'] = $result['access_token'];
-			$this->access['token_time'] = (int)date('U');
-			$this->access['token_expires'] = $result['expires_in'];
-		}
-		else {
-			return false;
-		}
-		
-		return true;
-	}
-
+	
 	/**
 	 * Send a POST request to clarifAI API.
 	 * @param string $data json inputs string.
@@ -156,7 +105,7 @@ abstract class AbstractBaseApi implements AuthInterface
 		
 		$header = array();
 		$header[] = 'Content-type: application/json';
-		$header[] = 'Authorization: Bearer ' . $this->access['token'];
+		$header[] = 'Authorization: Key ' . $this->apikey;
 				
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
@@ -182,7 +131,7 @@ abstract class AbstractBaseApi implements AuthInterface
 	
 		$header = array();
 		$header[] = 'Content-type: application/json';
-		$header[] = 'Authorization: Bearer ' . $this->access['token'];
+		$header[] = 'Authorization: Key ' . $this->apikey;
 	
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
@@ -208,7 +157,7 @@ abstract class AbstractBaseApi implements AuthInterface
 	
 		$header = array();
 		$header[] = 'Content-type: application/json';
-		$header[] = 'Authorization: Bearer ' . $this->access['token'];
+		$header[] = 'Authorization: Key ' . $this->apikey;
 	
 		curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 		curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PATCH");
@@ -236,7 +185,7 @@ abstract class AbstractBaseApi implements AuthInterface
 		
 		$header = array();
 		$header[] = 'Content-type: application/json';
-		$header[] = 'Authorization: Bearer ' . $this->access['token'];
+		$header[] = 'Authorization: Key ' . $this->apikey;
 		
 		if($data === '') {
 			$url = $this->apiurl . '/' . $service;

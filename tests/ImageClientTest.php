@@ -4,12 +4,11 @@ use PhpFanatic\clarifAI\ImageClient;
 
 class ImageClientTest extends PHPUnit_Framework_TestCase {
 
-	private $clientid='testid';
-	private $clientsecret='testsecret';
+	private $apikey='testkey';
 	private $client;
 		
 	protected function setUp() {
-		$this->client = new ImageClient($this->clientid, $this->clientsecret);
+		$this->client = new ImageClient($this->apikey);
 	}
 
 	protected function tearDown() {

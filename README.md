@@ -20,9 +20,9 @@ or
 Add the package manually by downloading the most recent stable version release from Github and include the src/ directory
 within your own project.
 
-* [zip](https://github.com/PHPfanatic/clarifai/archive/1.2.3.zip)
+* [zip](https://github.com/PHPfanatic/clarifai/archive/2.0.0.zip)
 
-* [tar](https://github.com/PHPfanatic/clarifai/archive/1.2.3.gz)
+* [tar](https://github.com/PHPfanatic/clarifai/archive/2.0.0.gz)
 
 ### Requirements
 
@@ -36,7 +36,7 @@ within your own project.
 ```
 use PhpFanatic\clarifAI\ImageClient;
 
-$client = new ImageClient([CLIENT_ID], [CLIENT_SECRET]);
+$client = new ImageClient([API_KEY]);
 
 $client->AddImage('http://phpfanatic.com/projects/clarifai/dog.jpg');
 $result = $client->Predict();
@@ -47,6 +47,7 @@ $result = $client->Predict();
 [PHPfanatic - ClarifAI documentation](https://github.com/PHPfanatic/clarifai/wiki/)
 
 ## Change History
+* 2.0.0 - Changed Clarifai authentication to use API Key method.
 * 1.2.3 - Added User-Agent Library header to outbound curl calls per Clarifai request.
 * 1.2.2 - Fixed malformed url bug when you paginate a get request. (credit: @mhdere)
 * 1.2.1 - Fixed urlencode bug (credit: keithslater), added additional Clarifai models.

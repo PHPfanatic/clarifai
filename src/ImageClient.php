@@ -4,7 +4,7 @@
  *
  * @author   Nick White <git@phpfanatic.com>
  * @link     https://github.com/PHPfanatic/clarifai
- * @version  1.2.3
+ * @version  2.0.0
  */
 
 use PhpFanatic\clarifAI\Api\AbstractBaseApi;
@@ -61,8 +61,8 @@ class ImageClient extends AbstractBaseApi
 			'zh-TW'=>'Chinese Traditional'
 	];
 	
-	public function __construct($clientid, $clientsecret) {
-		parent::__construct($clientid, $clientsecret);
+	public function __construct($apikey) {
+		parent::__construct($apikey);
 	}
 	
 	/**
@@ -75,10 +75,8 @@ class ImageClient extends AbstractBaseApi
 		$data = array('model'=>array('name'=>$model, 'id'=>$model_id));
 		$json = json_encode($data);
 		
-		if(!$this->IsTokenValid()) {
-			if($this->GenerateToken() === false) {
-				throw new \ErrorException('Token generation failed.');
-			}
+		if(!$this->IsApiKeySet()) {
+				throw new \ErrorException('No API Key Set');			
 		}
 		
 		$service='models';
@@ -100,10 +98,8 @@ class ImageClient extends AbstractBaseApi
 		$data['models'][] = $build;
 		$data['action']=$action;
 		
-		if(!$this->IsTokenValid()) {
-			if($this->GenerateToken() === false) {
-				throw new \ErrorException('Token generation failed.');
-			}
+		if(!$this->IsApiKeySet()) {
+			throw new \ErrorException('No API Key Set');
 		}
 		
 		$service = 'models';
@@ -126,10 +122,8 @@ class ImageClient extends AbstractBaseApi
 	 */
 	public function ModelDelete($id=null, $version=null) {
 		
-		if(!$this->IsTokenValid()) {
-			if($this->GenerateToken() === false) {
-				throw new \ErrorException('Token generation failed.');
-			}
+		if(!$this->IsApiKeySet()) {
+			throw new \ErrorException('No API Key Set');
 		}
 		
 		$service="models";
@@ -162,10 +156,8 @@ class ImageClient extends AbstractBaseApi
 	 * @return string Json response from ClarifAI.
 	 */
 	public function ModelGet($id=null, $version=null) {
-		if(!$this->IsTokenValid()) {
-			if($this->GenerateToken() === false) {
-				throw new \ErrorException('Token generation failed.');
-			}
+		if(!$this->IsApiKeySet()) {
+			throw new \ErrorException('No API Key Set');
 		}
 		
 		$service = 'models';
@@ -192,10 +184,8 @@ class ImageClient extends AbstractBaseApi
 	 * @return string Json response from ClarifAI.
 	 */
 	public function ModelTrain($id) {
-		if(!$this->IsTokenValid()) {
-			if($this->GenerateToken() === false) {
-				throw new \ErrorException('Token generation failed.');
-			}
+		if(!$this->IsApiKeySet()) {
+			throw new \ErrorException('No API Key Set');
 		}
 		
 		$service = 'models/'.urlencode($id).'/versions';
@@ -218,10 +208,8 @@ class ImageClient extends AbstractBaseApi
 			throw new \LogicException('You must add at least one image via AddImage().');
 		}
 				
-		if(!$this->IsTokenValid()) {
-			if($this->GenerateToken() === false) {
-				throw new \ErrorException('Token generation failed.');
-			}
+		if(!$this->IsApiKeySet()) {
+			throw new \ErrorException('No API Key Set');
 		}
 		
 		// Custom model handler.
@@ -255,10 +243,8 @@ class ImageClient extends AbstractBaseApi
 			throw new \LogicException('You must add at least one image via AddImage().');
 		}
 		
-		if(!$this->IsTokenValid()) {
-			if($this->GenerateToken() === false) {
-				throw new \ErrorException('Token generation failed.');
-			}
+		if(!$this->IsApiKeySet()) {
+			throw new \ErrorException('No API Key Set');
 		}
 		
 		$service = 'inputs';
@@ -281,10 +267,8 @@ class ImageClient extends AbstractBaseApi
 			throw new \LogicException('You must add at least one concept via AddConcept()');
 		}
 		
-		if(!$this->IsTokenValid()) {
-			if($this->GenerateToken() === false) {
-				throw new \ErrorException('Token generation failed.');
-			}
+		if(!$this->IsApiKeySet()) {
+			throw new \ErrorException('No API Key Set');
 		}
 		
 		$service = 'inputs';
@@ -304,10 +288,8 @@ class ImageClient extends AbstractBaseApi
 	 * @return string Json response from ClarifAI.
 	 */
 	public function InputsDelete($id=null) {
-		if(!$this->IsTokenValid()) {
-			if($this->GenerateToken() === false) {
-				throw new \ErrorException('Token generation failed.');
-			}
+		if(!$this->IsApiKeySet()) {
+			throw new \ErrorException('No API Key Set');
 		}
 
 		if(is_array($id)) {
@@ -340,10 +322,8 @@ class ImageClient extends AbstractBaseApi
 	 * @return string Json response from ClarifAI.
 	 */
 	public function InputsGet($id=null) {
-		if(!$this->IsTokenValid()) {
-			if($this->GenerateToken() === false) {
-				throw new \ErrorException('Token generation failed.');
-			}
+		if(!$this->IsApiKeySet()) {
+			throw new \ErrorException('No API Key Set');
 		}
 		
 		$service = 'inputs';
@@ -364,10 +344,8 @@ class ImageClient extends AbstractBaseApi
 	 * @return string Json response from ClarifAI.
 	 */
 	public function InputsGetStatus() {
-		if(!$this->IsTokenValid()) {
-			if($this->GenerateToken() === false) {
-				throw new \ErrorException('Token generation failed.');
-			}
+		if(!$this->IsApiKeySet()) {
+			throw new \ErrorException('No API Key Set');
 		}
 		
 		$service = 'inputs';
@@ -434,10 +412,8 @@ class ImageClient extends AbstractBaseApi
 			$this->search['query']['ands'][0]['output'] = array('input'=>$this->search['query']['ands'][0]['output']);
 		}
 		
-		if(!$this->IsTokenValid()) {
-			if($this->GenerateToken() === false) {
-				throw new \ErrorException('Token generation failed.');
-			}
+		if(!$this->IsApiKeySet()) {
+			throw new \ErrorException('No API Key Set');
 		}
 		
 		$service = 'searches';
