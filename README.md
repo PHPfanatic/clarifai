@@ -6,7 +6,7 @@ Clarifai API Library, PHP/Composer implementation of the clarifai api. ([clarifa
 PHPfanatic's PHP library brings you the power of clarifai's image recognition API wrapped in an easy to use PHP library that you can
 add to your own project easily with composer.
 
-Build smarter apps faster with Clarifai’s powerful visual recognition technology.
+Build smarter apps faster with Clarifaiâ€™s powerful visual recognition technology.
 
 ## Getting Started
 
@@ -20,9 +20,9 @@ or
 Add the package manually by downloading the most recent stable version release from Github and include the src/ directory
 within your own project.
 
-* [zip](https://github.com/PHPfanatic/clarifai/archive/2.0.0.zip)
+* [zip](https://github.com/PHPfanatic/clarifai/archive/2.0.1.zip)
 
-* [tar](https://github.com/PHPfanatic/clarifai/archive/2.0.0.gz)
+* [tar](https://github.com/PHPfanatic/clarifai/archive/2.0.1.gz)
 
 ### Requirements
 
@@ -47,6 +47,7 @@ $result = $client->Predict();
 [PHPfanatic - ClarifAI documentation](https://github.com/PHPfanatic/clarifai/wiki/)
 
 ## Change History
+* 2.0.1 - Patched clientversion variable.
 * 2.0.0 - Changed Clarifai authentication to use API Key method.
 * 1.2.3 - Added User-Agent Library header to outbound curl calls per Clarifai request.
 * 1.2.2 - Fixed malformed url bug when you paginate a get request. (credit: @mhdere)
